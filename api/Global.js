@@ -1,0 +1,1 @@
+export const API_END_POINT_LOGIN = "http://localhost/online_opd_ipd-main/online_opd_ipd-main/verifymob.php";
