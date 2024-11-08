@@ -25,7 +25,7 @@ const App = () => {
           
           <CustomButton
             title="Continue To Sign In"
-            handlePress={() => router.push("/sign-in")}
+            handlePress={() => router.push("/verifyuser")}
             containerStyle=" mt-7 mx-2"
           />
   </ScrollView>

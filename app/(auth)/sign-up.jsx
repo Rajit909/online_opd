@@ -173,7 +173,7 @@ const SignUp = () => {
 
             <Text className=" text-center my-5">
               Already have an account?{" "}
-              <Link href={"/sign-in"}>
+              <Link href={"/verifyuser"}>
               Log In
               </Link>
             </Text>

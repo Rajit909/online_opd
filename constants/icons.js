@@ -14,6 +14,7 @@ import play from "../assets/icons/play.png";
 import appointment from "../assets/icons/booking1.png";
 import nextappointment from "../assets/icons/nextappoint.png";
 import report from "../assets/icons/report.png";
+import medical_report from "../assets/icons/medical.png"
 
 export default {
   play,
@@ -31,6 +32,6 @@ export default {
   eye,
   appointment,
   nextappointment,
-  report
-  
+  report,
+  medical_report,
 };

@@ -43,6 +43,8 @@ const SignIn = () => {
         return;
       }
 
+      console.log(parsedUsers)
+
 
       await AsyncStorage.setItem("user", JSON.stringify(userExists));
       setSuccess("Login successful");

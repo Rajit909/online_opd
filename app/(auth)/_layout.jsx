@@ -24,6 +24,9 @@ const AuthLayout = () => {
         <Stack.Screen name='createpass' options={{
           headerShown: false  
         }} />
+        <Stack.Screen name='verifyuser' options={{
+          headerShown: false  
+        }} />
       </Stack>
     </>
   )

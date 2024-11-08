@@ -5,15 +5,17 @@ import images from '@/constants/images'
 import FormField from '../components/FormField'
 import CustomButton from '../components/CustomButton'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { router } from 'expo-router'
+import { Link, router } from 'expo-router'
+import { store } from 'expo-router/build/global-state/router-store'
 
-const VerifyOtp = () => {
+const VerifyUser = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    
+
+
     const [form, setForm] = useState({
-      otp: "",
+        mobile: "",
     });
 
 
@@ -22,34 +24,40 @@ const VerifyOtp = () => {
         setError("");
         setSuccess("");
         try {
-          const userOtp = await AsyncStorage.getItem("userotp");
-          console.log(userOtp)
-            const { otp } = form;
-            //get the users details from the AsyncStorage
-            const storedUsers = await AsyncStorage.getItem("users");
-            const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
-            const userMobile = await AsyncStorage.getItem("usermobile");
-            console.log(userMobile)
 
-            // find the user with the mobile number
-            const userDetails = await AsyncStorage.getItem("userdetails");
-           
-
-            // check if the otp is valid
-            console.log(parsedUsers)
-            
-            if (userOtp == otp) {
-                setSuccess("Otp verified successfully");
-                Alert.alert("Otp verified successfully");
-                // login the user
-                await AsyncStorage.setItem("user", JSON.stringify(userDetails));
-                router.push("/home");
-                setForm({ otp: "" });
-            }else{
-                setError("Invalid Otp");
+            const { mobile } = form;
+            // check if the mobile number is valid
+            if (!mobile) {
+                setError("Mobile Number is required");
                 setIsSubmitting(false);
                 return;
             }
+        
+            //get the users details from the AsyncStorage
+            const storedUsers = await AsyncStorage.getItem("users");
+            const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
+            const userExists = parsedUsers.find(
+              (user) => user.mobile === mobile
+            );
+            if (!userExists) {
+                setError("Incorrect Mobile Number");
+                setIsSubmitting(false);
+                return;
+            }
+            // let userotp = Math.floor(1000 + Math.random() * 9000);
+            let userotp = 2222;
+
+            //store the otp in the AsyncStorage
+            await AsyncStorage.setItem("userotp", JSON.stringify(userotp));
+            // store the mobile number in the AsyncStorage
+            await AsyncStorage.setItem("usermobile", JSON.stringify(mobile));
+            // store the user details in the AsyncStorage
+            await AsyncStorage.setItem("userdetails", JSON.stringify(userExists));
+            console.log(userotp);
+            console.log("user in verfy",userExists)
+            setSuccess("OTP sent successfully");
+            Alert.alert("OTP sent successfully");
+            router.push("/verifyotp");
         } catch (error) {
             console.log(error)
         }finally{
@@ -76,16 +84,16 @@ const VerifyOtp = () => {
               style={{ width: 220, height: 220 }}
               resizeMode="contain"
             />
-            <Text className=' text-xl text-gray-200 font-bold'>Verify Otp</Text>
-            <Text>{}</Text>
-            <Text className=' text-gray-200'>Enter Otp below to verify mobile number </Text>
+            <Text className=' text-xl text-gray-200 font-bold'>Verify account </Text>
+            <Text className=' text-gray-200'>Enter your Mobile Number below to Verify your account</Text>
             <FormField
-                title="Otp"
+                title="Mobile Number"
                 required={true}
-                placeholder="Enter Otp "
+                placeholder="Enter Mobile Number"
                 otherStyles="mt-5"
-                onChangeText={(e) => setForm({ ...form, otp: e })}
-                value={form.otp}
+                onChangeText={(e) => setForm({ ...form, mobile: e })}
+                value={form.mobile}
+                keyboardType="number-pad"
             />
 
             {
@@ -96,11 +104,18 @@ const VerifyOtp = () => {
             }
 
             <CustomButton
-              title="Verify Otp"
+              title="Verify"
               containerStyle="mt-10"
               handlePress={submit}
               isLoading={isSubmitting}
             />
+
+            <Text className="text-center mt-5">
+              Don't have an account?{" "}
+              <Link href={"/sign-up"}>
+              Sign Up
+              </Link>
+            </Text>
             </View>
         </ScrollView>
         </SafeAreaView>
@@ -109,4 +124,4 @@ const VerifyOtp = () => {
   )
 }
 
-export default VerifyOtp
+export default VerifyUser
