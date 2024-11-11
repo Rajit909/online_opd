@@ -55,7 +55,7 @@ const TabsLayout = () => {
             ),
           }}
         />
-        <Tabs.Screen
+        {/* <Tabs.Screen
           name="bookappointment"
           options={{
             title: "BookaApointment",
@@ -69,8 +69,8 @@ const TabsLayout = () => {
               />
             ),
           }}
-        />
-        <Tabs.Screen
+        /> */}
+        {/* <Tabs.Screen
           name="nextappointment"
           options={{
             title: "NextAppointment",
@@ -84,7 +84,7 @@ const TabsLayout = () => {
               />
             ),
           }}
-        />
+        /> */}
         <Tabs.Screen
           name="report"
           options={{

@@ -1,8 +1,7 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import React from 'react'
 
-const Crad = ({
-    handlePress, 
+const Card = ({
   containerStyle, 
   isLoading,
   bgColor,
@@ -12,8 +11,7 @@ const Crad = ({
 }) => {
   return (
    <>
-     <TouchableOpacity
-                onPress={handlePress}
+     <View
                 activeOpacity={0.7}
                 className={`w-96 rounded-xl min-h-28 flex flex-row items-center ${containerStyle} ${
                   isLoading ? "opacity-50" : ""
@@ -37,9 +35,9 @@ const Crad = ({
                 >
                   {title}
                 </Text>
-              </TouchableOpacity>
+              </View>
    </>
   )
 }
 
-export default Crad
+export default Card

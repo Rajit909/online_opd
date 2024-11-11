@@ -21,6 +21,9 @@ const AuthLayout = () => {
         <Stack.Screen name='verifyotp' options={{
           headerShown: false  
         }} />
+        <Stack.Screen name='verifypassotp' options={{
+          headerShown: false  
+        }} />
         <Stack.Screen name='createpass' options={{
           headerShown: false  
         }} />

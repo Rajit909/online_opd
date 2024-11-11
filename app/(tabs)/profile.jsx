@@ -1,27 +1,46 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, SafeAreaView, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Profile = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // setup dark mode toggle
-  
+  const [theme , setTheme] = useState('light');
+
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    const getUser = async () => {
+      const storedUser = await AsyncStorage.getItem("user");
+      const parsedUser = storedUser ? JSON.parse(storedUser) : {};
+      setUser(parsedUser);
+    };
+    getUser();
+  }, []);
+
+  console.log("User at profile",user);
+
+
+  // useEffect(() => {
+  //   document.documentElement.classList.toggle("dark", theme === 'dark');
+  //   localStorage.setItem('theme', theme);
+  // },[theme]);
 
   const handleToggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   const logout = async () => {
     await AsyncStorage.removeItem('user');
-    router.replace('/verifyuser');
+    router.replace('/sign-in');
   }  
 
   return (
     <>
-    <SafeAreaView className=' h-full '>
+    <SafeAreaView className=' h-full dark:bg-primary dark:text-white'>
       <ScrollView
        contentContainerStyle={{
         height: "100vh",
@@ -31,8 +50,8 @@ const Profile = () => {
       <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Icon name="account-circle" size={24} color="#4285F4" />
-        <Text style={styles.headerText}>Profile</Text>
+        <Icon name="account-circle"  size={24} color="#4285F4" />
+        <Text className=" dark:text-white mr-8" style={styles.headerText}>Profile</Text>
         <Text></Text>
       </View>
 
@@ -42,13 +61,15 @@ const Profile = () => {
           source={{ uri: 'https://via.placeholder.com/100' }} // Replace with actual profile image URL
           style={styles.profileImage}
         />
-        <Text style={styles.profileName}>Andrew Ainsley</Text>
-        <Text style={styles.profilePhone}>+1 111 467 378 399</Text>
+        <Text className=" dark:text-white"  style={styles.profileName}>{user.firstname +" "+ user.lastname}</Text>
+        <Text style={styles.profilePhone} className=" dark:text-white">{user.mobile}</Text>
       </View>
 
       {/* Profile Options */}
-      <View style={styles.optionsContainer}>
-        <Option icon="person-outline" label="Edit Profile" />
+      <View style={{paddingTop: 10}} className=" dark:text-white ">
+        <TouchableOpacity onPress={() => router.push('/editprofile')}>
+        <Option  icon="person-outline" label="Edit Profile" />
+        </TouchableOpacity>
         
         {/* Dark Mode Toggle */}
         <View style={styles.option}>
@@ -65,7 +86,7 @@ const Profile = () => {
           onPress={logout}
         >
           <Icon name="logout" size={24} color="red" />
-          <Text style={[styles.optionText, { color: 'red' }]}>Logout</Text>
+          <Text style={[styles.optionText, { color: 'red' }]} >Logout</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -123,17 +144,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  optionsContainer: {
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
+  
   option: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+
   },
   optionLeft: {
     flexDirection: 'row',
@@ -152,8 +169,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
 });
 

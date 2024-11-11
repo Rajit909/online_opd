@@ -18,7 +18,7 @@ const SignIn = () => {
     mobile: "",
     password: "",
   });
-  console.log(form)
+  // console.log(form)
 
   const submit = async () => {
     setIsSubmitting(true);
@@ -43,7 +43,7 @@ const SignIn = () => {
         return;
       }
 
-      console.log(parsedUsers)
+      // console.log(parsedUsers)
 
 
       await AsyncStorage.setItem("user", JSON.stringify(userExists));
@@ -89,6 +89,7 @@ const SignIn = () => {
               otherStyles="mt-5"
               onChangeText={(e) => setForm({ ...form, mobile: e })}
               value={form.mobile}
+              keyboardType="number-pad"
             />
             <FormField
               title="Password"
@@ -117,7 +118,7 @@ const SignIn = () => {
 
             <Text className="text-center mt-5">
               Don't have an account?{" "}
-              <Link href={"/sign-up"}>
+              <Link href={"/verifyuser"} className="text-blue-800">
               Sign Up
               </Link>
             </Text>

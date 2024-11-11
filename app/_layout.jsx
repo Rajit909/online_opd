@@ -19,7 +19,7 @@ useEffect(() => {
     if (user) {
       router.push('/home');
     } else {
-      router.push('/verifyuser');
+      router.push('/sign-in');
     }
   };
 
@@ -72,6 +72,9 @@ useEffect(() => {
         headerShown: false
       }} />
     <Stack.Screen name='(tabs)' options={{
+        headerShown: false
+      }} />
+    <Stack.Screen name='(screens)' options={{
         headerShown: false
       }} />
     </Stack>

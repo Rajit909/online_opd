@@ -2,10 +2,10 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import Header from "../components/Header";
 import icons from "@/constants/icons";
-import Crad from "../components/Crad";
+import Card from "../components/Card";
 
 const Home = () => {
   const [user, setUser] = useState({});
@@ -19,7 +19,7 @@ const Home = () => {
     getUser();
   }, []);
 
-  console.log("User at home",user);
+  console.log("User at home", user);
 
   return (
     <>
@@ -31,42 +31,60 @@ const Home = () => {
             // alignItems: "center",
             // justifyContent: "center",
           }}
-    >
+        >
           <View>
-
-            <Header name={user.firstname} />
+            <View className="">
+              <Header name={user.firstname} />
+            </View>
 
             <View className="py-5 flex justify-center items-center gap-5">
               <Text className=" font-bold text-3xl px-4 font-plight">
                 Services
               </Text>
               <View className="flex flex-col gap-5">
-                <Crad
-                title={"Book a Appointment"}
-                icon={icons.appointment}
-                bgColor={"blue"}
-                textColor={"text-white"}
-                />
-                <Crad
-                title={"Appointment Report"}
-                icon={icons.medical_report}
-                bgColor={"#209F84"}
-                textColor={"text-white"}
-                />
-                <Crad
-                title={"OPD Report"}
-                icon={icons.report}
-                bgColor={"#EF4444"}
-                textColor={"text-white"}
-                />
-                <Crad
-                title={"Upcoming Appointment"}
-                icon={icons.nextappointment}
-                bgColor={"#2781D5"}
-                textColor={"text-white"}
-                />
+                <TouchableOpacity
+                  onPress={() => router.push("/bookappointment")}
+                >
+                  <Card
+                    title={"Book a Appointment"}
+                    icon={icons.appointment}
+                    bgColor={"blue"}
+                    textColor={"text-white"}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => router.push("/appointmentreport")}
+                >
+                  <Card
+                    title={"Appointment Report"}
+                    icon={icons.medical_report}
+                    bgColor={"#209F84"}
+                    textColor={"text-white"}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => router.push("/opdreport")}
+                >
+                  <Card
+                    title={"OPD Report"}
+                    icon={icons.report}
+                    bgColor={"#EF4444"}
+                    textColor={"text-white"}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => router.push("/nextappointment")}
+                >
+                  <Card
+                    title={"Upcoming Appointment"}
+                    icon={icons.nextappointment}
+                    bgColor={"#2781D5"}
+                    textColor={"text-white"}
+                  />
+                </TouchableOpacity>
               </View>
-             
             </View>
           </View>
         </ScrollView>

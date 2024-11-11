@@ -49,7 +49,7 @@ const ForgetPassword = () => {
             console.log(userotp);
             setSuccess("OTP sent successfully");
             Alert.alert("OTP sent successfully");
-            router.push("/verifyotp");
+            router.push("/verifypassotp");
         } catch (error) {
             console.log(error)
         }finally{

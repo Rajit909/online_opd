@@ -32,31 +32,24 @@ const VerifyUser = () => {
                 setIsSubmitting(false);
                 return;
             }
-        
-            //get the users details from the AsyncStorage
+            // check if the mobile number is exist
             const storedUsers = await AsyncStorage.getItem("users");
             const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
-            const userExists = parsedUsers.find(
-              (user) => user.mobile === mobile
-            );
-            if (!userExists) {
-                setError("Incorrect Mobile Number");
+            const userExist = parsedUsers.find((user) => user.mobile === mobile);
+            if (userExist) {
+                setError("Mobile Number already exists");
                 setIsSubmitting(false);
                 return;
             }
-            // let userotp = Math.floor(1000 + Math.random() * 9000);
-            let userotp = 2222;
 
-            //store the otp in the AsyncStorage
-            await AsyncStorage.setItem("userotp", JSON.stringify(userotp));
-            // store the mobile number in the AsyncStorage
-            await AsyncStorage.setItem("usermobile", JSON.stringify(mobile));
-            // store the user details in the AsyncStorage
-            await AsyncStorage.setItem("userdetails", JSON.stringify(userExists));
-            console.log(userotp);
-            console.log("user in verfy",userExists)
-            setSuccess("OTP sent successfully");
-            Alert.alert("OTP sent successfully");
+
+            // send otp to the mobile number
+            const userotp = 2222;
+            await AsyncStorage.setItem("userotp", userotp.toString());
+            setSuccess("Otp sent successfully");
+              // store the mobile number in local storage
+              await AsyncStorage.setItem("user_mobile", mobile);
+              setSuccess("Mobile Number saved successfully");
             router.push("/verifyotp");
         } catch (error) {
             console.log(error)
@@ -111,9 +104,9 @@ const VerifyUser = () => {
             />
 
             <Text className="text-center mt-5">
-              Don't have an account?{" "}
-              <Link href={"/sign-up"}>
-              Sign Up
+              Already have an Account?{" "}
+              <Link href={"/sign-in"} className='text-blue-800 font-psemibold'>
+                Sign In
               </Link>
             </Text>
             </View>

@@ -7,7 +7,7 @@ import CustomButton from '../components/CustomButton'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
 
-const VerifyOtp = () => {
+const VerifyPassOtp = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -18,30 +18,44 @@ const VerifyOtp = () => {
 
 
     const submit = async () => {
-      setIsSubmitting(true);
-      setError("");
-      setSuccess("");
-      try {
-        const storedOtp = await AsyncStorage.getItem("userotp");
-        const { otp } = form;
-    
-        if (storedOtp === otp) {
-          setSuccess("OTP verified successfully.");
-          Alert.alert("OTP verified successfully.");
-          const mobile = await AsyncStorage.getItem("user_mobile");
-          await AsyncStorage.setItem("user_mobile_verified", mobile);
-          router.push("/sign-up");
-        } else {
-          setError("Invalid OTP.");
+        setIsSubmitting(true);
+        setError("");
+        setSuccess("");
+        try {
+          const userOtp = await AsyncStorage.getItem("userotp");
+          console.log(userOtp)
+            const { otp } = form;
+            //get the users details from the AsyncStorage
+            const storedUsers = await AsyncStorage.getItem("users");
+            const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
+            const userMobile = await AsyncStorage.getItem("usermobile");
+            console.log(userMobile)
+
+            // find the user with the mobile number
+            const userDetails = await AsyncStorage.getItem("userdetails");
+           
+
+            // check if the otp is valid
+            console.log(parsedUsers)
+            
+            if (userOtp == otp) {
+                setSuccess("Otp verified successfully");
+                Alert.alert("Otp verified successfully");
+                // login the user
+                await AsyncStorage.setItem("user", JSON.stringify(userDetails));
+                router.push("/createpass");
+                setForm({ otp: "" });
+            }else{
+                setError("Invalid Otp");
+                setIsSubmitting(false);
+                return;
+            }
+        } catch (error) {
+            console.log(error)
+        }finally{
+            setIsSubmitting(false);
         }
-      } catch (error) {
-        setError("Error verifying OTP. Please try again.");
-        console.log(error);
-      } finally {
-        setIsSubmitting(false);
-      }
-    };
-    
+    }
   return (
    <>
     <SafeAreaView className="bg-gray-400 h-full">
@@ -64,7 +78,7 @@ const VerifyOtp = () => {
             />
             <Text className=' text-xl text-gray-200 font-bold'>Verify Otp</Text>
             <Text>{}</Text>
-            <Text className=' text-gray-200'>Enter Otp below to verify mobile number </Text>
+            <Text className=' text-gray-200 text-wrap'>Enter Otp below to verify mobile number to create new password </Text>
             <FormField
                 title="Otp"
                 required={true}
@@ -95,4 +109,4 @@ const VerifyOtp = () => {
   )
 }
 
-export default VerifyOtp
+export default VerifyPassOtp

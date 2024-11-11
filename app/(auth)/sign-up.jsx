@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Dimensions, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import images from '@/constants/images'
 import FormField from '../components/FormField'
@@ -27,6 +27,24 @@ const SignUp = () => {
   });
 
 
+  useEffect(() => {
+    const fetchMobileNumber = async () => {
+      try {
+        const storedMobile = await AsyncStorage.getItem("user_mobile");
+        if (storedMobile) {
+          setForm((prevForm) => ({
+            ...prevForm,
+            mobile: storedMobile, // Set mobile number from local storage
+          }));
+        }
+      } catch (error) {
+        console.error("Error retrieving mobile number", error);
+      }
+    };
+    fetchMobileNumber();
+  }, []); // Empt
+
+
 
   const submit = async () => {
     setIsSubmitting(true);
@@ -35,7 +53,7 @@ const SignUp = () => {
     try {
       // check if all fields are filled
     const { firstname, lastname, mobile, password, confirmPassword } = form;
-    if (!firstname || !lastname || !mobile || !password || !confirmPassword) {
+    if (!firstname || !lastname || !password || !confirmPassword) {
       setError("All fields are required");
       setIsSubmitting(false);
       return;
@@ -125,13 +143,13 @@ const SignUp = () => {
               onChangeText={(e) => setForm({ ...form, lastname: e })}
             />
 
-            <FormField
+            {/* <FormField
               title="Mobile Number"
               placeholder="Enter Mobile Number"
               otherStyles="mt-5"
               value={form.mobile}
               onChangeText={(e) => setForm({ ...form, mobile: e })}
-            />
+            /> */}
 
             {/* password field */}
             <FormField

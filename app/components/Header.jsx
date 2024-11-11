@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 const Header = ({name}) => {
   const logout = async () => {
     await AsyncStorage.removeItem('user');
-    router.replace('/verifyuser');
+    router.replace('/sign-in');
   }  
   return (
     <View style={styles.headerContainer}>
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 40,
     backgroundColor: '#fff',
   },
   profileContainer: {
