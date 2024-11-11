@@ -1,3 +1,4 @@
+import images from '@/constants/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -58,7 +59,7 @@ const Profile = () => {
       {/* Profile Image and Details */}
       <View style={styles.profileSection}>
         <Image
-          source={{ uri: 'https://via.placeholder.com/100' }} // Replace with actual profile image URL
+          source={images.profile} // Replace with actual profile image URL
           style={styles.profileImage}
         />
         <Text className=" dark:text-white"  style={styles.profileName}>{user.firstname +" "+ user.lastname}</Text>
@@ -80,6 +81,7 @@ const Profile = () => {
           <Switch value={isDarkMode} onValueChange={handleToggleDarkMode} />
         </View>
 
+        <Option icon="help-outline" label="Help Center" />
 
         {/* Logout */}
         <TouchableOpacity style={styles.logoutOption}

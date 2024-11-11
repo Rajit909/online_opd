@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -6,9 +6,17 @@ import { Link, router } from "expo-router";
 import Header from "../components/Header";
 import icons from "@/constants/icons";
 import Card from "../components/Card";
+import Banner from "../components/Banner";
 
 const Home = () => {
   const [user, setUser] = useState({});
+
+  const data = [
+    { id: "1", title: "Item 1" },
+    { id: "2", title: "Item 2" },
+    { id: "3", title: "Item 3" },
+    { id: "4", title: "Item 4" },
+  ];
 
   useEffect(() => {
     const getUser = async () => {
@@ -33,13 +41,15 @@ const Home = () => {
           }}
         >
           <View>
-            <View className="">
+            <View >
               <Header name={user.firstname} />
             </View>
-
+            {/* horizontal flatlist for banner */}
+              
+              <Banner data={data}/>
             <View className="py-5 flex justify-center items-center gap-5">
               <Text className=" font-bold text-3xl px-4 font-plight">
-                Services
+                Quick Access
               </Text>
               <View className="flex flex-col gap-5">
                 <TouchableOpacity

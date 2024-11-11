@@ -18,6 +18,7 @@ const ScreensLayout = () => {
             <Stack.Screen name="opdreport" options={{
                 headerShown: false
             }} />
+
             <Stack.Screen name="appointmentreport" options={{
                 headerShown: false
             }} />

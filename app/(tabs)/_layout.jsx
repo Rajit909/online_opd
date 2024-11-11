@@ -17,8 +17,8 @@ const TabIcon = ({ icon, color, name, focused }) => {
         resizeMode="contain"
         tintColor={color}
         style={{
-          width: 25,
-          height: 25,
+          width: 20,
+          height: 20,
           // tintColor: focused ? color : "gray"
         }}
       />
@@ -36,7 +36,7 @@ const TabsLayout = () => {
           tabBarStyle: {
             backgroundColor: "white",
             borderTopColor: "#232533",
-            height: 84,
+            height: 60,
           },
         }}
       >

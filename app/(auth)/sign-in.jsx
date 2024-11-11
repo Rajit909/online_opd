@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, Image, Dimensions, Alert } from "react-native";
 import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import images from "../../constants/images";
 import FormField from "../components/FormField";
 import CustomButton from "../components/CustomButton";
@@ -61,8 +61,10 @@ const SignIn = () => {
 
   return (
     <>
-      <SafeAreaView className="bg-gray-400 h-full">
+    <SafeAreaProvider>
+      <SafeAreaView className="bg-gray-400 h-full" edges={['top']}>
         <ScrollView
+        alwaysBounceVertical={true}
           contentContainerStyle={{
             height: "100vh",
             display: "flex",
@@ -127,6 +129,7 @@ const SignIn = () => {
           </View>
         </ScrollView>
       </SafeAreaView>
+     </SafeAreaProvider>
     </>
   );
 };

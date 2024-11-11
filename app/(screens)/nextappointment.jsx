@@ -1,11 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import Banner from '../components/Banner'
 
 const NextAppointment = () => {
   return (
    <>
     <View>
-      <Text>NextAppointment</Text>
+      <Text>Next Appointment</Text>
     </View>
    </>
   )
