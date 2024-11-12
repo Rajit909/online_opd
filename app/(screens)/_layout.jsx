@@ -22,6 +22,12 @@ const ScreensLayout = () => {
             <Stack.Screen name="appointmentreport" options={{
                 headerShown: false
             }} />
+            <Stack.Screen name="appointmentpreview" options={{
+                headerShown: false
+            }} />
+            <Stack.Screen name="contact" options={{
+                headerShown: false
+            }} />
 
         </Stack>
     

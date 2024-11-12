@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, SplashScreen, Stack } from 'expo-router'
 import '../global.css'
@@ -11,7 +11,6 @@ SplashScreen.preventAutoHideAsync();
 
 const  RootLayout = () => {
 
-
   
 useEffect(() => {
   const checkAuth = async () => {
@@ -19,13 +18,12 @@ useEffect(() => {
     if (user) {
       router.push('/home');
     } else {
-      router.push('/sign-in');
+      router.push('/');
     }
   };
 
   checkAuth();
 })
-
 
 
   const [fontsLoaded, error] = useFonts({
@@ -39,12 +37,6 @@ useEffect(() => {
     "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
-
-
-  
-
-
-
 
   useEffect(() => {
     if (error) throw error;

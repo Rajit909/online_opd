@@ -2,11 +2,12 @@ import images from '@/constants/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Profile = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [theme , setTheme] = useState('light');
 
@@ -17,6 +18,7 @@ const Profile = () => {
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
       setUser(parsedUser);
+      setLoading(false);
     };
     getUser();
   }, []);
@@ -39,6 +41,14 @@ const Profile = () => {
     router.replace('/sign-in');
   }  
 
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   return (
     <>
     <SafeAreaView className=' h-full dark:bg-primary dark:text-white'>
@@ -80,8 +90,9 @@ const Profile = () => {
           </View>
           <Switch value={isDarkMode} onValueChange={handleToggleDarkMode} />
         </View>
-
+        <TouchableOpacity onPress={()=> router.replace("/contact")}>
         <Option icon="help-outline" label="Help Center" />
+        </TouchableOpacity>
 
         {/* Logout */}
         <TouchableOpacity style={styles.logoutOption}

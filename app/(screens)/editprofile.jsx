@@ -17,6 +17,7 @@ import { Link, router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import icons from "@/constants/icons";
+import BackBtn from "../components/BackBtn";
 
 const EditProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,6 +29,7 @@ const EditProfile = () => {
   const [form, setForm] = useState({
     firstname: "",
     lastname: "",
+    age: "",
     password: "",
     confirmPassword: "",
   });
@@ -51,7 +53,7 @@ const EditProfile = () => {
     setSuccess("");
     try {
       // check if all fields are filled
-      const { firstname, lastname, password, confirmPassword } = form;
+      const { firstname, lastname, age, password, confirmPassword } = form;
 
       // check if password and confirm password are the same
       if (password !== confirmPassword) {
@@ -69,6 +71,7 @@ const EditProfile = () => {
         ...parsedUser,
         firstname,
         lastname,
+        age,
         password,
       };
       console.log("updated user", updatedUser);
@@ -85,7 +88,8 @@ const EditProfile = () => {
   };
   return (
     <>
-      <SafeAreaView className="bg-gray-600 h-full">
+      <SafeAreaView className="bg-indigo-200 h-full">
+      <BackBtn title={"Profile"} styles={{paddingHorizontal: 20, paddingVertical: 20}} handlePress={()=> router.replace("/profile")}/>
         <ScrollView
           contentContainerStyle={{
             height: "100vh",
@@ -100,21 +104,10 @@ const EditProfile = () => {
               minHeight: Dimensions.get("window").height - 100,
             }}
           >
-            <View style={styles.profileHeader}>
-              {/* <TouchableOpacity onPress={() => router.replace("/profile")}> */}
-              <Link href={"/profile"}>
-                <Image
-                  source={icons.leftArrow}
-                  style={{ width: 22, height: 20 }}
-                />
-              </Link>
-              {/* </TouchableOpacity> */}
-              <Text className=" font-psemibold dark:text-white">Profile</Text>
-              <Text></Text>
-            </View>
+
             <Image
               source={images.logo}
-              style={{ width: 220, height: 120 }}
+              style={{ width: 220, height: 100 }}
               resizeMode="contain"
             />
 
@@ -132,6 +125,13 @@ const EditProfile = () => {
               otherStyles="mt-5"
               value={form.lastname}
               onChangeText={(e) => setForm({ ...form, lastname: e })}
+            />
+            <FormField
+              title="Patient Age"
+              placeholder="Enter your age"
+              otherStyles="mt-5"
+              value={form.age}
+              onChangeText={(e) => setForm({ ...form, age: e })}
             />
 
             {/* password field */}

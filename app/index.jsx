@@ -7,12 +7,7 @@ import { router } from 'expo-router'
 import Banner from './components/Banner'
 
 const App = () => {
-  const BannerData = [
-    { id: "1", title: "Item 1" },
-    { id: "2", title: "Item 2" },
-    { id: "3", title: "Item 3" },
-    { id: "4", title: "Item 4" },
-  ];
+  
   return (
   <>
   <SafeAreaProvider>
@@ -26,7 +21,7 @@ const App = () => {
       />
     </View>
 
-    <Banner data={BannerData}/>      
+    <Banner/>      
 
         <Text className="text-white text-2xl font-bold" style={{marginTop: 40}}>
           Welcome to GangaSheel 

@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Image, FlatList } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, FlatList, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,6 +10,13 @@ import Banner from "../components/Banner";
 
 const Home = () => {
   const [user, setUser] = useState({});
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 2000);
+  }, []);
+
 
   const data = [
     { id: "1", title: "Item 1" },
@@ -39,6 +46,9 @@ const Home = () => {
             // alignItems: "center",
             // justifyContent: "center",
           }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
           <View>
             <View >
@@ -56,7 +66,7 @@ const Home = () => {
                   onPress={() => router.push("/bookappointment")}
                 >
                   <Card
-                    title={"Book a Appointment"}
+                    title={"Book an Appointment"}
                     icon={icons.appointment}
                     bgColor={"blue"}
                     textColor={"text-white"}
