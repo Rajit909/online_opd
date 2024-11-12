@@ -2,7 +2,7 @@ import images from '@/constants/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, SafeAreaView, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Profile = () => {
@@ -12,6 +12,13 @@ const Profile = () => {
   const [theme , setTheme] = useState('light');
 
   const [user, setUser] = useState({});
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 2000);
+  }, []);
+
 
   useEffect(() => {
     const getUser = async () => {
@@ -57,6 +64,13 @@ const Profile = () => {
         height: "100vh",
         marginTop: 20,
       }}
+
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }
       >
       <View style={styles.container}>
       {/* Header */}

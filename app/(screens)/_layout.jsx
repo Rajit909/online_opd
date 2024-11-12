@@ -7,7 +7,8 @@ const ScreensLayout = () => {
     <>
         <Stack>
             <Stack.Screen name="editprofile" options={{
-                headerShown: false
+                headerShown: false,
+                presentation: 'modal'
             }} />
             <Stack.Screen name="bookappointment" options={{
                 headerShown: false

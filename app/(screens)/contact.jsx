@@ -62,9 +62,6 @@ import {
                     <Text className="font-pmedium border m-1 bg-indigo-200 rounded-md p-1" style={{fontSize:16}}>
                         <Text className=" border-r pr-1">Email:</Text> abc@gmail.com</Text>
                     <Text className="font-pmedium border m-1 bg-indigo-200 rounded-md p-1" style={{fontSize:16}}> <Text className=" border-r pr-1">Phone:</Text>  123456789</Text>
-                    <Text className="font-pmedium border m-1 bg-indigo-200 rounded-md p-1" style={{fontSize:16}}>
-                    <Text className=" border-r pr-1">Address:</Text> 
-                         123, abc street, xyz city</Text>
                 </View>
 
   

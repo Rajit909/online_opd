@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Banner from '../components/Banner';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -12,6 +12,11 @@ const AppointmentReport = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 2000);
+  }, []);
 
 
   useEffect(() => {
@@ -61,7 +66,12 @@ const AppointmentReport = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView className="h-full">
-        <ScrollView contentContainerStyle={{ height: '100vh', display: 'flex' }}>
+        <ScrollView contentContainerStyle={{ height: '100vh', display: 'flex' }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        
+        >
           <View style={{paddingHorizontal:10}}>
             <Header name={user.firstname} />
             {/* <BackBtn
