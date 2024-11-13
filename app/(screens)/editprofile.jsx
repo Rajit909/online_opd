@@ -45,7 +45,7 @@ const EditProfile = () => {
     getUser();
   }, []);
 
-  console.log("User at edit profile", user);
+  // console.log("User at edit profile", user);
 
   const submit = async () => {
     setIsSubmitting(true);
@@ -65,7 +65,7 @@ const EditProfile = () => {
       // get user details from local storage
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      console.log("parsed user", parsedUser);
+      // console.log("parsed user", parsedUser);
       // update user details
       const updatedUser = {
         ...parsedUser,
@@ -74,7 +74,7 @@ const EditProfile = () => {
         age,
         password,
       };
-      console.log("updated user", updatedUser);
+      // console.log("updated user", updatedUser);
       // save updated user details to local storage
       await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
       setSuccess("Profile updated successfully");

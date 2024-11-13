@@ -30,7 +30,7 @@ const OpdReport = () => {
     getUser();
   }, []);
 
-  console.log("user's appointments",user.appointments);
+  // console.log("user's appointments",user.appointments);
 
   const opdReport = [
     {

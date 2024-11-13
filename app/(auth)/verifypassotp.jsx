@@ -23,20 +23,20 @@ const VerifyPassOtp = () => {
         setSuccess("");
         try {
           const userOtp = await AsyncStorage.getItem("userotp");
-          console.log(userOtp)
+          // console.log(userOtp)
             const { otp } = form;
             //get the users details from the AsyncStorage
             const storedUsers = await AsyncStorage.getItem("users");
             const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
             const userMobile = await AsyncStorage.getItem("usermobile");
-            console.log(userMobile)
+            // console.log(userMobile)
 
             // find the user with the mobile number
             const userDetails = await AsyncStorage.getItem("userdetails");
            
 
             // check if the otp is valid
-            console.log(parsedUsers)
+            // console.log(parsedUsers)
             
             if (userOtp == otp) {
                 setSuccess("Otp verified successfully");

@@ -1,4 +1,11 @@
-import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  Dimensions,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -40,28 +47,58 @@ const Home = () => {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         <View style={{ flex: 1 }}>
           {/* Header */}
           <Header name={user.firstname} />
 
           {/* Banner */}
-            <Banner data={data} />
+          <Banner data={data} />
 
           {/* Quick Access Section */}
-          <View style={{ paddingVertical: height * 0.02, alignItems: "center" }}>
-            <Text style={{ fontSize: width * 0.08, fontWeight: "bold" }}>Quick Access</Text>
-            
+          <View
+            style={{ paddingVertical: height * 0.02, alignItems: "center" }}
+          >
+            <Text style={{ fontSize: width * 0.08, fontWeight: "bold" }}>
+              Quick Access
+            </Text>
+
             <View style={{ width: width * 0.85, marginTop: height * 0.02 }}>
               {/* Cards */}
               {[
-                { title: "Book an Appointment", icon: icons.appointment, bgColor: "blue", route: "/bookappointment" },
-                { title: "Appointment Report", icon: icons.medical_report, bgColor: "#209F84", route: "/appointmentreport" },
-                { title: "OPD Report", icon: icons.report, bgColor: "#EF4444", route: "/opdreport" },
-                { title: "Upcoming Appointment", icon: icons.nextappointment, bgColor: "#2781D5", route: "/nextappointment" },
+                {
+                  title: "Book an Appointment",
+                  icon: icons.appointment,
+                  bgColor: "blue",
+                  route: "/bookappointment",
+                },
+                {
+                  title: "Appointment Report",
+                  icon: icons.medical_report,
+                  bgColor: "#209F84",
+                  route: "/appointmentreport",
+                },
+                {
+                  title: "OPD Report",
+                  icon: icons.report,
+                  bgColor: "#EF4444",
+                  route: "/opdreport",
+                },
+                {
+                  title: "Upcoming Appointment",
+                  icon: icons.nextappointment,
+                  bgColor: "#2781D5",
+                  route: "/nextappointment",
+                },
               ].map((card, index) => (
-                <TouchableOpacity key={index} onPress={() => router.push(card.route)} style={{ marginVertical: height * 0.01 }}>
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => router.push(card.route)}
+                  style={{ marginVertical: height * 0.01 }}
+                >
                   <Card
                     title={card.title}
                     icon={card.icon}

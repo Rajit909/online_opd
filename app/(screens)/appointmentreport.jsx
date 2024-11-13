@@ -31,7 +31,7 @@ const Appointmentreport = () => {
     getUser();
   }, []);
 
-  console.log("user's appointments",user.appointments);
+  // console.log("user's appointments",user.appointments);
 
   const appointmentReport = [
     {

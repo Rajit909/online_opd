@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, BackHandler } from 'react-native';
 import { Ionicons, AntDesign } from '@expo/vector-icons'; // You can also use other icon libraries
 import icons from '@/constants/icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
 const Header = ({name}) => {
+
+  const [user, setUser] = useState({});
+
   const logout = async () => {
     await AsyncStorage.removeItem('user');
     router.replace('/');
   }  
+
+  // console.log(user)
+
+  useEffect(() => {
+    const backAction = () =>{
+      const getUser = async () => {
+        const storedUser = await AsyncStorage.getItem("user");
+        const parsedUser = storedUser ? JSON.parse(storedUser) : {};
+        setUser(parsedUser);
+        if(!user){
+          router.replace('/');
+        }
+      };
+    }
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => backHandler.remove();
+    
+  }, [router])
   return (
     <View style={styles.headerContainer}>
       {/* Profile Image and Text */}

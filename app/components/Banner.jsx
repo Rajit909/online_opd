@@ -65,6 +65,7 @@ const Banner = () => {
             />
           </View>
         )}
+        showsHorizontalScrollIndicator={false}
         onScrollToIndexFailed={(info) => {
           flatListRef.current.scrollToOffset({
             offset: info.averageItemLength * info.index,

@@ -46,7 +46,7 @@ const ForgetPassword = () => {
 
             //store the otp in the AsyncStorage
             await AsyncStorage.setItem("userotp", JSON.stringify(userotp));
-            console.log(userotp);
+            // console.log(userotp);
             setSuccess("OTP sent successfully");
             Alert.alert("OTP sent successfully");
             router.push("/verifypassotp");

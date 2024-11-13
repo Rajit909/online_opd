@@ -19,7 +19,7 @@ const BookAppointment = () => {
   const [patientAge, setPatientAge] = useState('');
   const [selectedGender, setSelectedGender] = useState(null);
 
-  console.log(selectedDoctor, selectedDepartment, selectedDate, selectedTime, patientName, selectedGender);
+  // console.log(selectedDoctor, selectedDepartment, selectedDate, selectedTime, patientName, selectedGender);
 
   const doctors = [
     { id: '1', name: 'Dr. John Doe' , department: 'Cardiology'},
@@ -29,7 +29,7 @@ const BookAppointment = () => {
 
   // slecting department based on doctor using id 
   const departments = doctors.filter(doctor => doctor.name === selectedDoctor).map(doctor => doctor.department)
-  console.log(departments)
+  // console.log(departments)
 
   // Generate dates for the next 7 days starting from today and hide weekends
   const dates = Array.from({ length: 7 }, (_, i) => {
@@ -119,6 +119,8 @@ const BookAppointment = () => {
       },
     });
   }
+
+  
   return (
     <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
@@ -147,7 +149,6 @@ const BookAppointment = () => {
         {departments.length > 0 ? departments.join(", ") : 'Select Doctor first'}
         </Text>
         
-      <ScrollView >
         <Text style={styles.label}>Select Date</Text>
         <FlatList
           data={dates}
@@ -164,9 +165,7 @@ const BookAppointment = () => {
           )}
           showsHorizontalScrollIndicator={false}
         />
-        </ScrollView>
 
-        <ScrollView>
 
         <Text style={styles.label}>Select Time</Text>
         <FlatList
@@ -185,7 +184,6 @@ const BookAppointment = () => {
             </TouchableOpacity>
           )}
           />
-          </ScrollView>
         <Text style={styles.label}>Patient Name</Text>
         <TextInput
           style={styles.input}
@@ -258,7 +256,7 @@ const styles = StyleSheet.create({
   dateText: { fontSize: 14, color: '#333' },
   timeButton: {
     margin: 8,
-    padding: 10,
+    padding: 5,
     borderRadius: 5,
     backgroundColor: '#fff',
     borderColor: '#ddd',

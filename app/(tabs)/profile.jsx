@@ -2,7 +2,7 @@ import images from '@/constants/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, SafeAreaView, ScrollView, ActivityIndicator, RefreshControl, Dimensions, PixelRatio } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, SafeAreaView, ScrollView, ActivityIndicator, RefreshControl, Dimensions, PixelRatio, BackHandler } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Profile = () => {
@@ -31,7 +31,7 @@ const Profile = () => {
     getUser();
   }, []);
 
-  console.log("User at profile",user);
+  // console.log("User at profile",user);
 
 
   
@@ -49,10 +49,25 @@ const Profile = () => {
 
   const logout = async () => {
     await AsyncStorage.removeItem('user');
-    router.replace('/sign-in');
+    router.replace('/');
   }  
 
 
+  useEffect(() => {
+    const backAction = () =>{
+      const getUser = async () => {
+        const storedUser = await AsyncStorage.getItem("user");
+        const parsedUser = storedUser ? JSON.parse(storedUser) : {};
+        setUser(parsedUser);
+        if(!user){
+          router.replace('/');
+        }
+      };
+    }
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => backHandler.remove();
+    
+  }, [router])
 
 
   if (loading) {
