@@ -2,10 +2,11 @@ import images from '@/constants/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, SafeAreaView, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, SafeAreaView, ScrollView, ActivityIndicator, RefreshControl, Dimensions, PixelRatio } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Profile = () => {
+
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -33,6 +34,9 @@ const Profile = () => {
   console.log("User at profile",user);
 
 
+  
+
+
   // useEffect(() => {
   //   document.documentElement.classList.toggle("dark", theme === 'dark');
   //   localStorage.setItem('theme', theme);
@@ -47,6 +51,8 @@ const Profile = () => {
     await AsyncStorage.removeItem('user');
     router.replace('/sign-in');
   }  
+
+
 
 
   if (loading) {
@@ -134,19 +140,28 @@ const Option = ({ icon, label, rightText }) => (
   </View>
 );
 
+
+const {width, height} = Dimensions.get('window');
+const scale = width / 375; //Assuming width is the design width
+
+function normalize(size) {
+  const newSize = size * scale
+  return Math.round(PixelRatio.roundToNearestPixel(newSize))
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: normalize(20),
+    paddingVertical: normalize(10),
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: normalize(20),
   },
   headerText: {
-    fontSize: 18,
+    fontSize: normalize(18),
     fontWeight: 'bold',
     color: '#000',
   },
@@ -154,49 +169,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginLeft: 10,
+    width: normalize(100),
+    height: normalize(100),
+    borderRadius: normalize(50),
   },
   profileName: {
-    fontSize: 20,
+    fontSize: normalize(20),
     fontWeight: 'bold',
     color: '#000',
-    marginTop: 10,
+    marginTop: normalize(10),
   },
   profilePhone: {
-    fontSize: 14,
+    fontSize: normalize(14),
     color: '#888',
-    marginTop: 4,
+    marginTop: normalize(4),
   },
-
-  
   option: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 15,
-
+    paddingVertical: normalize(15),
   },
   optionLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   optionText: {
-    fontSize: 16,
+    fontSize: normalize(16),
     color: '#000',
-    marginLeft: 15,
+    marginLeft: normalize(15),
   },
   rightText: {
-    fontSize: 16,
+    fontSize: normalize(16),
     color: '#888',
   },
   logoutOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: normalize(15),
   },
 });
+
 
 export default Profile;

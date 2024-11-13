@@ -5,20 +5,16 @@ import images from "../../constants/images";
 import FormField from "../components/FormField";
 import CustomButton from "../components/CustomButton";
 import { Link, router } from "expo-router";
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignIn = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
   const [success, setSuccess] = useState("");
-
   const [form, setForm] = useState({
     mobile: "",
     password: "",
   });
-  // console.log(form)
 
   const submit = async () => {
     setIsSubmitting(true);
@@ -43,9 +39,6 @@ const SignIn = () => {
         return;
       }
 
-      // console.log(parsedUsers)
-
-
       await AsyncStorage.setItem("user", JSON.stringify(userExists));
       setSuccess("Login successful");
       router.push("/home");
@@ -57,25 +50,18 @@ const SignIn = () => {
     }
   };
   
-
-
   return (
-    <>
     <SafeAreaProvider>
       <SafeAreaView className="bg-gray-400 h-full" edges={['top']}>
         <ScrollView
-        alwaysBounceVertical={true}
           contentContainerStyle={{
-            height: "100vh",
-            display: "flex",
+            flexGrow: 1,
             alignItems: "center",
             justifyContent: "center",
+            paddingVertical: 20,
           }}
         >
-          <View  className="text-2xl font-semibold text-white"
-           style={{
-              minHeight: Dimensions.get("window").height - 100,
-            }}>
+          <View className="text-2xl font-semibold text-white" style={{ width: '100%', paddingHorizontal: 20 }}>
             <Image
               source={images.logo}
               style={{ width: 220, height: 220 }}
@@ -121,16 +107,13 @@ const SignIn = () => {
             <Text className="text-center mt-5">
               Don't have an account?{" "}
               <Link href={"/verifyuser"} className="text-blue-800">
-              Sign Up
+                Sign Up
               </Link>
             </Text>
-
-
           </View>
         </ScrollView>
       </SafeAreaView>
-     </SafeAreaProvider>
-    </>
+    </SafeAreaProvider>
   );
 };
 

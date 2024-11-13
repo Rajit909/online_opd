@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   },
   dateText: { fontSize: 14, color: '#333' },
   timeButton: {
-    margin: 5,
+    margin: 8,
     padding: 10,
     borderRadius: 5,
     backgroundColor: '#fff',

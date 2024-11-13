@@ -72,8 +72,8 @@ const AppointmentReport = () => {
         }
         
         >
-          <View style={{paddingHorizontal:10}}>
             <Header name={user.firstname} />
+          <View style={{paddingHorizontal:10}}>
             {/* <BackBtn
               styles={{ paddingHorizontal: 10, paddingVertical: 10 }}
               handlePress={() => router.replace('/home')}

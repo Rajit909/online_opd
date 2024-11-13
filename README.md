@@ -48,3 +48,18 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+## Create build for Android
+
+```bash 
+eas build --profile development --platform android
+```
+
+## Create build for iOS
+
+```bash
+   eas device:create
+
+   eas build --profile development --platform ios
+```

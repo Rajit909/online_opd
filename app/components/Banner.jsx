@@ -1,26 +1,19 @@
 import React, { useRef, useEffect, useState } from "react";
-import { View, FlatList, Text, StyleSheet, Image } from "react-native";
+import { View, FlatList, Text, StyleSheet, Image, Dimensions } from "react-native";
 import images from "@/constants/images";
+
+// Get screen width and height
+const { width, height } = Dimensions.get("window");
+
+// You can define a dynamic width and height for banner items
+const bannerWidth = width * 0.97; // 100% of screen width
+const bannerHeight = height * 0.25; // 25% of screen height
 
 const Banner = () => {
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
- 
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => {
-        const nextIndex = prevIndex === data.length - 1 ? 0 : prevIndex + 1;
-        flatListRef.current.scrollToIndex({ animated: true, index: nextIndex });
-        return nextIndex;
-      });
-    }, 3000); // 3000ms = 3 seconds
-
-    // Clear the interval on component unmount
-    return () => clearInterval(interval);
-  }, []);
-  const data  = [
+  const data = [
     {
       id: "1",
       image: images.banner1,
@@ -40,8 +33,21 @@ const Banner = () => {
       id: "4",
       image: images.banner4,
       title: "Banner",
-    }
-  ]
+    },
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = prevIndex === data.length - 1 ? 0 : prevIndex + 1;
+        flatListRef.current.scrollToIndex({ animated: true, index: nextIndex });
+        return nextIndex;
+      });
+    }, 3000); // 3000ms = 3 seconds
+
+    // Clear the interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -52,12 +58,11 @@ const Banner = () => {
         pagingEnabled
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.item}>
+          <View style={[styles.item, { width: bannerWidth, height: bannerHeight }]}>
             <Image
               source={item.image}
-              style={styles.item}
+              style={{ width: "100%", height: "100%", borderRadius: 10 }}
             />
-            {/* <Text style={styles.title}>{item.title}</Text> */}
           </View>
         )}
         onScrollToIndexFailed={(info) => {
@@ -74,22 +79,17 @@ const Banner = () => {
 const styles = StyleSheet.create({
   container: { 
     flex: 1,
-    justifyContent: 
-    "center", 
+    justifyContent: "center", 
     alignItems: "center",
-    maxHeight: 180,
-
- },
+    maxHeight: bannerHeight,
+  },
   item: {
-    width: 340,
-    height: 150,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#dfe4ea",
-    margin: 10,
+    marginHorizontal: 5, // adjust margin based on needs
     borderRadius: 10,
   },
-  title: { fontSize: 24, fontWeight: "bold", color: "#333" },
 });
 
 export default Banner;

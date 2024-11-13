@@ -74,10 +74,10 @@ const OpdReport = () => {
           />
         }
         >
-          <View style={{paddingHorizontal:10}}>
             <Header name={user.firstname} />
+          <View style={{paddingHorizontal:10}}>
             <BackBtn
-              styles={{ paddingHorizontal: 10, paddingVertical: 10 }}
+              styles={{ paddingVertical: 10 }}
               handlePress={() => router.replace('/home')}
             />
 

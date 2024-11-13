@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 const Header = ({name}) => {
   const logout = async () => {
     await AsyncStorage.removeItem('user');
-    router.replace('/sign-in');
+    router.replace('/');
   }  
   return (
     <View style={styles.headerContainer}>
