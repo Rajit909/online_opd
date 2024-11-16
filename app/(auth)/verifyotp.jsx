@@ -1,17 +1,26 @@
 import { View, Text, ScrollView, Dimensions, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import images from '@/constants/images'
 import FormField from '../components/FormField'
 import CustomButton from '../components/CustomButton'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
+import { API_END_POINT_VERIFY_OTP } from '@/api/Global'
 
 const VerifyOtp = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [mobile, setMobile] = useState("");
     
+    useEffect(() => {
+      // fetch mobile number from async storage
+      AsyncStorage.getItem("mobile").then((mobile) => {
+        setMobile(mobile);
+      });
+    }, []);
+
     const [form, setForm] = useState({
       otp: "",
     });
@@ -22,20 +31,36 @@ const VerifyOtp = () => {
       setError("");
       setSuccess("");
       try {
-        const storedOtp = await AsyncStorage.getItem("userotp");
+        // fetch mobile number from async storage
+        AsyncStorage.getItem("mobile").then((mobile) => {
+          setMobile(mobile);
+        });
         const { otp } = form;
+
+        const response = await fetch(`${API_END_POINT_VERIFY_OTP}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ otp, mobile: mobile}),
+        })
     
-        if (storedOtp === otp) {
-          setSuccess("OTP verified successfully.");
-          Alert.alert("OTP verified successfully.");
-          const mobile = await AsyncStorage.getItem("user_mobile");
-          await AsyncStorage.setItem("user_mobile_verified", mobile);
-          router.push("/sign-up");
-        } else {
-          setError("Invalid OTP.");
+        const data = await response.json(); 
+        console.log(data)
+
+        if(!response.ok){
+          setError(data.message);
+          setIsSubmitting(false);
+          return;
         }
+       
+        if(data.message === "OTP verified successfully"){
+          setSuccess("OTP verified successfully");
+          router.push("/sign-up");
+        }
+        
       } catch (error) {
-        setError("Error verifying OTP. Please try again.");
+        setError(error.message);
         console.log(error);
       } finally {
         setIsSubmitting(false);
@@ -57,7 +82,7 @@ const VerifyOtp = () => {
            style={{
               minHeight: Dimensions.get("window").height - 100,
             }}>
-                <Image
+            <Image
               source={images.logo}
               style={{ width: 220, height: 220 }}
               resizeMode="contain"
@@ -66,14 +91,21 @@ const VerifyOtp = () => {
             <Text>{}</Text>
             <Text className=' text-gray-200'>Enter Otp below to verify mobile number </Text>
             <FormField
-                title="Otp"
-                required={true}
-                placeholder="Enter Otp "
-                otherStyles="mt-5"
-                onChangeText={(e) => setForm({ ...form, otp: e })}
-                value={form.otp}
+              title="Mobile Number"
+              required={true}
+              otherStyles="mt-5"
+              value={mobile}
+              onChangeText={(e) => setMobile(mobile)}
             />
-
+            <FormField
+              title="Otp"
+              required={true}
+              placeholder="Enter Otp"
+              otherStyles="mt-5"
+              onChangeText={(e) => setForm({ ...form, otp: e })}
+              value={form.otp}
+            />
+            
             {
                 error ? <Text className="text-red-500 text-sm mt-2">{error}</Text> : null
                 }
@@ -90,7 +122,6 @@ const VerifyOtp = () => {
             </View>
         </ScrollView>
         </SafeAreaView>
-   
    </>
   )
 }

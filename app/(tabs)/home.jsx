@@ -66,7 +66,7 @@ const Home = () => {
               Quick Access
             </Text>
 
-            <View style={{ width: width * 0.85, marginTop: height * 0.02 }}>
+            <View style={{ width: width * 0.92, marginTop: height * 0.02 }}>
               {/* Cards */}
               {[
                 {

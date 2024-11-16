@@ -7,6 +7,7 @@ import CustomButton from '../components/CustomButton'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Link, router } from 'expo-router'
 import { store } from 'expo-router/build/global-state/router-store'
+import { API_END_POINT_VERIFY_MOBILE } from '@/api/Global'
 
 const VerifyUser = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,44 +20,59 @@ const VerifyUser = () => {
     });
 
 
-    const submit = async () => {
-        setIsSubmitting(true);
-        setError("");
-        setSuccess("");
-        try {
 
-            const { mobile } = form;
-            // check if the mobile number is valid
-            if (!mobile) {
-                setError("Mobile Number is required");
-                setIsSubmitting(false);
-                return;
-            }
-            // check if the mobile number is exist
-            const storedUsers = await AsyncStorage.getItem("users");
-            const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
-            const userExist = parsedUsers.find((user) => user.mobile === mobile);
-            if (userExist) {
-                setError("Mobile Number already exists");
-                setIsSubmitting(false);
-                return;
-            }
+  const submit = async () => {
+    setIsSubmitting(true);
+    setError("");
+    setSuccess("");
 
+    const { mobile } = form;
 
-            // send otp to the mobile number
-            const userotp = 2222;
-            await AsyncStorage.setItem("userotp", userotp.toString());
-            setSuccess("Otp sent successfully");
-              // store the mobile number in local storage
-              await AsyncStorage.setItem("user_mobile", mobile);
-              setSuccess("Mobile Number saved successfully");
-            router.push("/verifyotp");
-        } catch (error) {
-            console.log(error)
-        }finally{
-            setIsSubmitting(false);
-        }
+    // Check if the mobile number is valid
+    if (!mobile) {
+      setError("Mobile Number is required");
+      setIsSubmitting(false);
+      return;
     }
+
+    try {
+      // Send mobile number to the backend to check if it exists
+      const response = await fetch(`${API_END_POINT_VERIFY_MOBILE}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mobile: mobile }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Something went wrong');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // If the response is successful, OTP is sent successfully
+      if (data.message === 'OTP sent successfully') {
+        setSuccess('OTP sent successfully');
+        
+        // Store the mobile and OTP in AsyncStorage for later verification
+        await AsyncStorage.setItem('mobile', mobile);
+        await AsyncStorage.setItem('otp', data.otp.toString()); // Temporarily store OTP
+        
+        // Navigate to the OTP verification page
+        router.push("/verifyotp");
+      }
+
+    } catch (error) {
+      setError('Error sending OTP');
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
    <>
     <SafeAreaView className="bg-gray-400 h-full">

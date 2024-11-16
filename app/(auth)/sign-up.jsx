@@ -6,6 +6,7 @@ import FormField from "../components/FormField";
 import CustomButton from "../components/CustomButton";
 import { Link, router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_END_POINT_SIGN_UP } from "@/api/Global";
 
 const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,7 +23,7 @@ const SignUp = () => {
   useEffect(() => {
     const fetchMobileNumber = async () => {
       try {
-        const storedMobile = await AsyncStorage.getItem("user_mobile");
+        const storedMobile = await AsyncStorage.getItem("mobile");
         if (storedMobile) {
           setForm((prevForm) => ({
             ...prevForm,
@@ -40,48 +41,107 @@ const SignUp = () => {
     setIsSubmitting(true);
     setError("");
     setSuccess("");
+  
+    const { firstname, lastname, mobile, password, confirmPassword } = form;
+  
+    // Client-side validation
+    if (!firstname || !lastname || !password || !confirmPassword) {
+      setError("All fields are required");
+      setIsSubmitting(false);
+      return;
+    }
+  
+    if (password !== confirmPassword) {
+      setError("Password does not match");
+      Alert.alert("Please enter the same password");
+      setIsSubmitting(false);
+      return;
+    }
+  
     try {
-      const { firstname, lastname, mobile, password, confirmPassword } = form;
-      if (!firstname || !lastname || !password || !confirmPassword) {
-        setError("All fields are required");
-        setIsSubmitting(false);
-        return;
-      }
-      if (password !== confirmPassword) {
-        setError("Password does not match");
-        Alert.alert("Please enter the same password");
-        setIsSubmitting(false);
-        return;
-      }
-      const storedUsers = await AsyncStorage.getItem("users");
-      const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
-      const userExists = parsedUsers.find((user) => user.mobile === mobile);
-      if (userExists) {
-        setError("User already exists");
-        setIsSubmitting(false);
-        return;
-      }
-
-      const newUser = { firstname, lastname, mobile, password };
-      const updatedUsers = [...parsedUsers, newUser];
-      await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
-      setSuccess("Account created successfully");
-      setForm({
-        firstname: "",
-        lastname: "",
-        mobile: "",
-        password: "",
-        confirmPassword: "",
+      const response = await fetch(`${API_END_POINT_SIGN_UP}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          firstname,
+          lastname,
+          mobile,
+          password,
+        }).toString(),
       });
-      router.push("/sign-in");
+  
+      const result = await response.json();
+  
+      if (result.success) {
+        setSuccess(result.message || "Account created successfully");
+        setForm({
+          firstname: "",
+          lastname: "",
+          mobile: "",
+          password: "",
+          confirmPassword: "",
+        });
+        router.push("/sign-in");
+      } else {
+        setError(result.message || "Failed to create account");
+      }
     } catch (error) {
-      console.log(error);
-      setError("Failed to create account");
+      console.error("Signup error:", error);
+      setError("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
+
+  // const submit = async () => {
+  //   setIsSubmitting(true);
+  //   setError("");
+  //   setSuccess("");
+  //   try {
+  //     const { firstname, lastname, mobile, password, confirmPassword } = form;
+  //     if (!firstname || !lastname || !password || !confirmPassword) {
+  //       setError("All fields are required");
+  //       setIsSubmitting(false);
+  //       return;
+  //     }
+  //     if (password !== confirmPassword) {
+  //       setError("Password does not match");
+  //       Alert.alert("Please enter the same password");
+  //       setIsSubmitting(false);
+  //       return;
+  //     }
+  //     const storedUsers = await AsyncStorage.getItem("users");
+  //     const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
+  //     const userExists = parsedUsers.find((user) => user.mobile === mobile);
+  //     if (userExists) {
+  //       setError("User already exists");
+  //       setIsSubmitting(false);
+  //       return;
+  //     }
+
+  //     const newUser = { firstname, lastname, mobile, password };
+  //     const updatedUsers = [...parsedUsers, newUser];
+  //     await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
+  //     setSuccess("Account created successfully");
+  //     setForm({
+  //       firstname: "",
+  //       lastname: "",
+  //       mobile: "",
+  //       password: "",
+  //       confirmPassword: "",
+  //     });
+  //     router.push("/sign-in");
+  //   } catch (error) {
+  //     console.log(error);
+  //     setError("Failed to create account");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
   return (
     <SafeAreaView className="bg-gray-400 h-full">
       <ScrollView

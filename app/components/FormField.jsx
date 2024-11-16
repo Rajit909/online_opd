@@ -10,12 +10,14 @@ const FormField = ({
   placeholder,
   handleChangeText,
   otherStyles,
+  containerStyle,
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
 
   return (
+    <View style={containerStyle}>
     <View className={`space-y-2 ${otherStyles}`}>
       <Text className="text-base text-black-200 font-pmedium">{title}
         {required ? <Text className="text-red-600"> *</Text> : null}
@@ -45,6 +47,7 @@ const FormField = ({
         }
 
       </View>
+    </View>
     </View>
   );
 };
