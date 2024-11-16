@@ -22,11 +22,12 @@ const Appointmentreport = () => {
 
   useEffect(() => {
     const getUser = async () => {
+      // Fetch user details from AsyncStorage
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      setUser(parsedUser);
       setLoading(false);
-      setAppointments(parsedUser.appointments);
+      setUser(parsedUser);
+      setAppointments(parsedUser.appointments || []);
     };
     getUser();
   }, []);
@@ -76,7 +77,7 @@ const Appointmentreport = () => {
         }
         >
           <View style={{paddingHorizontal:10}}>
-            <Header name={user.firstname} />
+            <Header name={user.user.firstname} />
             <BackBtn
               styles={{ paddingHorizontal: 10, paddingVertical: 10 }}
               handlePress={() => router.replace('/home')}

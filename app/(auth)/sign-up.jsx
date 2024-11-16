@@ -95,53 +95,6 @@ const SignUp = () => {
     }
   };
   
-
-
-  // const submit = async () => {
-  //   setIsSubmitting(true);
-  //   setError("");
-  //   setSuccess("");
-  //   try {
-  //     const { firstname, lastname, mobile, password, confirmPassword } = form;
-  //     if (!firstname || !lastname || !password || !confirmPassword) {
-  //       setError("All fields are required");
-  //       setIsSubmitting(false);
-  //       return;
-  //     }
-  //     if (password !== confirmPassword) {
-  //       setError("Password does not match");
-  //       Alert.alert("Please enter the same password");
-  //       setIsSubmitting(false);
-  //       return;
-  //     }
-  //     const storedUsers = await AsyncStorage.getItem("users");
-  //     const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
-  //     const userExists = parsedUsers.find((user) => user.mobile === mobile);
-  //     if (userExists) {
-  //       setError("User already exists");
-  //       setIsSubmitting(false);
-  //       return;
-  //     }
-
-  //     const newUser = { firstname, lastname, mobile, password };
-  //     const updatedUsers = [...parsedUsers, newUser];
-  //     await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
-  //     setSuccess("Account created successfully");
-  //     setForm({
-  //       firstname: "",
-  //       lastname: "",
-  //       mobile: "",
-  //       password: "",
-  //       confirmPassword: "",
-  //     });
-  //     router.push("/sign-in");
-  //   } catch (error) {
-  //     console.log(error);
-  //     setError("Failed to create account");
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
   return (
     <SafeAreaView className="bg-gray-400 h-full">
       <ScrollView

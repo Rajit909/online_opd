@@ -25,13 +25,13 @@ const Profile = () => {
     const getUser = async () => {
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      setUser(parsedUser);
+      setUser(parsedUser.user);
       setLoading(false);
     };
     getUser();
   }, []);
 
-  // console.log("User at profile",user);
+  console.log("User at profile",user);
 
 
   
@@ -107,7 +107,7 @@ const Profile = () => {
           source={images.profile} // Replace with actual profile image URL
           style={styles.profileImage}
         />
-        <Text className=" dark:text-white"  style={styles.profileName}>{user.firstname +" "+ user.lastname}</Text>
+        <Text className=" dark:text-white"  style={styles.profileName}>{user.firstname}</Text>
         <Text style={styles.profilePhone} className=" dark:text-white">{user.mobile}</Text>
       </View>
 

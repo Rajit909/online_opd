@@ -1,46 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { router, useGlobalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_END_POINT_BOOK_APPOINTMENT } from '@/api/Global';
 
  
 const AppointmentPreview = () => {
   const { selectedDoctor, departments, selectedDate, selectedTime, patientName, patientAge, selectedGender } = useGlobalSearchParams();
   const [success, setSuccess] = useState('');
+  const [user, setUser] = useState('');
 
-  const submit = async () => {
-
-    try{
-      // get the user from the async storage
+  useEffect(() => {
+    const getUser = async () => {
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      //create appointments and store the appointment in the async storage for the user
+      setUser(parsedUser.user);
+      }
+    getUser();
+  }, []);
+
+  const submit = async () => {
+    try {
       const appointment = {
         doctor: selectedDoctor,
         department: departments,
-        date: selectedDate,
-        time: selectedTime,
-        patientName: patientName,
-        patientAge: patientAge,
-        patientGender: selectedGender,
+        appointment_date: selectedDate,
+        appointment_time: selectedTime,
+        patient_name: patientName,
+        patient_age: patientAge,
+        gender: selectedGender,
+        id: user.id, // Assuming the user has an id in the user object
       };
-      // save appointment to the user
-      const appointments = parsedUser.appointments || [];
-      appointments.push(appointment);
-      parsedUser.appointments = appointments;
-      await AsyncStorage.setItem("user", JSON.stringify(parsedUser));
-      Alert.alert('Appointment Booked!');
-      setSuccess('Appointment Booked!');
-      setTimeout(() => {
-        setSuccess('');
-        router.replace('/nextappointment');
-      }, 2000);
-      console.log(parsedUser);
-    }catch(error){
-      console.log(error);
+  
+      // Send the data to the PHP backend to save in the database
+      const response = await fetch(`${API_END_POINT_BOOK_APPOINTMENT}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointment),
+      });
+  
+      const text = await response.text(); // Capture the raw response as text
+      console.log("Raw Response:", text);
+  
+      // Try to parse the response as JSON
+      let data;
+        data = JSON.parse(text);
+        if (response.ok) {
+          setSuccess(data.message || 'Appointment booked successfully!');
+          Alert.alert('Success', data.message || 'Appointment booked successfully!');
+          // store appointment in user object in AsyncStorage
+          const storedUser = await AsyncStorage.getItem("user");
+          const parsedUser = storedUser ? JSON.parse(storedUser) : {};
+          const updatedUser = { ...parsedUser, appointments: [...(parsedUser.appointments || []), appointment] };
+          await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
+          console.log("Updated User:", updatedUser);
+          router.push('/nextappointment');
+        } else {
+          Alert.alert('Error', data.message || 'Failed to book appointment. Please try again later.');
+        }
+      
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again later.');
     }
-  }
-
+  };
+  
 
   return (
     <View style={styles.container}>

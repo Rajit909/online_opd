@@ -14,6 +14,7 @@ import Header from "../components/Header";
 import icons from "@/constants/icons";
 import Card from "../components/Card";
 import Banner from "../components/Banner";
+import { API_END_POINT_GET_USER } from "@/api/Global";
 
 // Get screen width and height
 const { width, height } = Dimensions.get("window");
@@ -38,10 +39,12 @@ const Home = () => {
     const getUser = async () => {
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      setUser(parsedUser);
-    };
+      setUser(parsedUser.user.firstname.toString());
+      }
     getUser();
   }, []);
+
+  console.log("User at home:", user);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -53,7 +56,7 @@ const Home = () => {
       >
         <View style={{ flex: 1 }}>
           {/* Header */}
-          <Header name={user.firstname} />
+          <Header name={user} />
 
           {/* Banner */}
           <Banner data={data} />

@@ -23,9 +23,8 @@ const AppointmentReport = () => {
     const getUser = async () => {
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      setUser(parsedUser);
+      setUser(parsedUser.user);
       setLoading(false);
-      setAppointments(parsedUser.appointments);
     };
     getUser();
   }, []);
@@ -38,20 +37,6 @@ const AppointmentReport = () => {
       report : "No report available"
     }
   ]
-
-  // const fetchAppointments = async (userId) => {
-  //   try {
-  //     // Replace with your API endpoint for fetching appointments
-  //     const response = await fetch(`https://api.example.com/appointments?userId=${userId}`);
-  //     const data = await response.json();
-      
-  //     setAppointments(data.upcomingAppointments); // Adjust based on actual API response
-  //   } catch (error) {
-  //     console.error("Error fetching appointments:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
  
 

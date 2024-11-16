@@ -20,32 +20,17 @@ const NextAppointment = () => {
 
   useEffect(() => {
     const getUser = async () => {
+      // Fetch user details from AsyncStorage
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      setUser(parsedUser);
       setLoading(false);
-      setAppointments(parsedUser.appointments);
+      setUser(parsedUser.user);
+      setAppointments(parsedUser.appointments || []);
     };
     getUser();
   }, []);
 
-  // console.log("user's appointments",user.appointments);
-
-  // const fetchAppointments = async (userId) => {
-  //   try {
-  //     // Replace with your API endpoint for fetching appointments
-  //     const response = await fetch(`https://api.example.com/appointments?userId=${userId}`);
-  //     const data = await response.json();
-      
-  //     setAppointments(data.upcomingAppointments); // Adjust based on actual API response
-  //   } catch (error) {
-  //     console.error("Error fetching appointments:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
- 
+  console.log("user at next appoin...",user);
 
   if (loading) {
     return (
@@ -88,10 +73,10 @@ const NextAppointment = () => {
                     shadowRadius: 3,
                   }}
                 >
-                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Doctor: {appointment.doctor}</Text>
-                  <Text>Date: {new Date(appointment.date).toLocaleDateString()}</Text>
-                  <Text>Time: {appointment.time}</Text>
-                  <Text>Department: {appointment.department}</Text>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Doctor:{appointment.doctor} </Text>
+                  <Text>Date:{appointment.appointment_date} </Text>
+                  <Text>Time:{appointment.appointment_time} </Text>
+                  <Text>Department:{appointment.department} </Text>
                 </View>
               ))
             ) : (

@@ -1,20 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, BackHandler } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, BackHandler, Alert } from 'react-native';
 import { Ionicons, AntDesign } from '@expo/vector-icons'; // You can also use other icon libraries
 import icons from '@/constants/icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { API_END_POINT_LOGOUT } from '@/api/Global';
 
 const Header = ({name}) => {
 
   const [user, setUser] = useState({});
 
   const logout = async () => {
-    await AsyncStorage.removeItem('user');
-    router.replace('/');
-  }  
+    try{
+    const response = await fetch(`${API_END_POINT_LOGOUT}`,{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  // console.log(user)
+    const data = await response.json();
+    console.log(data);
+    if(data.message === 'Logout successful'){
+      Alert.alert(data.message);
+      router.push('/');
+    }
+      
+    }catch(error){
+      console.error(error);
+    }
+  }  
 
   useEffect(() => {
     const backAction = () =>{
@@ -41,7 +56,7 @@ const Header = ({name}) => {
         />
         <View>
           <Text style={styles.greetingText}>Good Morning 👋</Text>
-          <Text style={styles.nameText}>{name}</Text>
+          <Text style={styles.nameText} >{JSON.stringify(name)}</Text>
         </View>
       </View>
       

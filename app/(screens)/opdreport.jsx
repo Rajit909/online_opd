@@ -21,11 +21,12 @@ const OpdReport = () => {
 
   useEffect(() => {
     const getUser = async () => {
+      // Fetch user details from AsyncStorage
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      setUser(parsedUser);
       setLoading(false);
-      setAppointments(parsedUser.appointments);
+      setUser(parsedUser);
+      setAppointments(parsedUser.appointments || []);
     };
     getUser();
   }, []);
@@ -39,21 +40,7 @@ const OpdReport = () => {
     }
   ]
 
-  // const fetchAppointments = async (userId) => {
-  //   try {
-  //     // Replace with your API endpoint for fetching appointments
-  //     const response = await fetch(`https://api.example.com/appointments?userId=${userId}`);
-  //     const data = await response.json();
-      
-  //     setAppointments(data.upcomingAppointments); // Adjust based on actual API response
-  //   } catch (error) {
-  //     console.error("Error fetching appointments:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
- 
 
   if (loading) {
     return (
@@ -74,7 +61,7 @@ const OpdReport = () => {
           />
         }
         >
-            <Header name={user.firstname} />
+            <Header name={user.user.firstname} />
           <View style={{paddingHorizontal:10}}>
             <BackBtn
               styles={{ paddingVertical: 10 }}
