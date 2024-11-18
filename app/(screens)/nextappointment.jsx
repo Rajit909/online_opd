@@ -31,6 +31,7 @@ const NextAppointment = () => {
   }, []);
 
   console.log("user at next appoin...",user);
+  console.log("appointments at next appoin...",appointments);
 
   if (loading) {
     return (
