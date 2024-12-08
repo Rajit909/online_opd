@@ -14,26 +14,10 @@ const Banner = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const data = [
-    {
-      id: "1",
-      image: images.banner1,
-      title: "Banner 1",
-    },
-    {
-      id: "2",
-      image: images.banner2,
-      title: "Banner 2",
-    },
-    {
-      id: "3",
-      image: images.banner3,
-      title: "Banner 3",
-    },
-    {
-      id: "4",
-      image: images.banner4,
-      title: "Banner",
-    },
+    { id: "1", image: images.banner1, title: "Banner 1" },
+    { id: "2", image: images.banner2, title: "Banner 2" },
+    { id: "3", image: images.banner3, title: "Banner 3" },
+    { id: "4", image: images.banner4, title: "Banner 4" },
   ];
 
   useEffect(() => {
@@ -43,11 +27,20 @@ const Banner = () => {
         flatListRef.current.scrollToIndex({ animated: true, index: nextIndex });
         return nextIndex;
       });
-    }, 3000); // 3000ms = 3 seconds
+    }, 3000); // Auto-scroll every 3 seconds
 
     // Clear the interval on component unmount
     return () => clearInterval(interval);
   }, []);
+
+  // Handle failure when scrolling to an index
+  const handleScrollToIndexFailed = (info) => {
+    const offset = info.averageItemLength * info.index;
+    flatListRef.current.scrollToOffset({
+      offset,
+      animated: true,
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -61,17 +54,12 @@ const Banner = () => {
           <View style={[styles.item, { width: bannerWidth, height: bannerHeight }]}>
             <Image
               source={item.image}
-              style={{ width: "100%", height: "100%", borderRadius: 10 }}
+              style={styles.bannerImage}
             />
           </View>
         )}
         showsHorizontalScrollIndicator={false}
-        onScrollToIndexFailed={(info) => {
-          flatListRef.current.scrollToOffset({
-            offset: info.averageItemLength * info.index,
-            animated: true,
-          });
-        }}
+        onScrollToIndexFailed={handleScrollToIndexFailed}
       />
     </View>
   );
@@ -83,12 +71,18 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     alignItems: "center",
     maxHeight: bannerHeight,
+    marginTop: 10, // Adjust as needed
   },
   item: {
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#dfe4ea",
     marginHorizontal: 5, // adjust margin based on needs
+    borderRadius: 10,
+  },
+  bannerImage: {
+    width: "100%",
+    height: "100%",
     borderRadius: 10,
   },
 });

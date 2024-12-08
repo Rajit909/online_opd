@@ -55,6 +55,8 @@ const NextAppointment = () => {
       setUsersAppointments(filterAppointments);
     }
   },[appointments])
+
+  console.log("usersAppointments", usersAppointments);
   
   if (loading) {
     return (

@@ -44,10 +44,9 @@ const SavedPatient = ({id}) => {
 
   // Fetch patients by mobile number
   const fetchedPatient = patientData.filter((patient) => patient.mob === user.mobile)
-  // console.log("fetchPatient",fetchedPatient)
   // find patient by id from fecthedPatient 
   const filteredPatient = fetchedPatient.find((patient) => patient.id == id)
-  // console.log("filteredPatient",filteredPatient)
+  console.log("filteredPatient",filteredPatient)
   
   useEffect(() => {
     if (filteredPatient) {
@@ -82,6 +81,7 @@ const [mobile, setMobile] = useState('');
         console.error(error);
       });
   }, []);
+  console.log("docData",docData)
 
   // get all schedule
   useEffect(() => {
@@ -105,7 +105,7 @@ const [mobile, setMobile] = useState('');
           const today = new Date();
           today.setHours(0, 0, 0, 0);
           const sevenDaysFromNow = new Date();
-          sevenDaysFromNow.setDate(today.getDate() + 7);
+          sevenDaysFromNow.setDate(today.getDate() + 1);
           // skip sunday date
           if(date.getDay() === 0) return false;
           return date >= today && date <= sevenDaysFromNow;
@@ -135,17 +135,15 @@ const [mobile, setMobile] = useState('');
   const handleDateChange = (date) => {
     setSelectedDate(date);
     setSelectedTime(''); // Reset selected time when date changes
-  
+    const time1 = docData.filter(doctor => doctor.name === selectedDoctor).map(doctor => doctor.time1)
+    const time2 = docData.filter(doctor => doctor.name === selectedDoctor).map(doctor => doctor.time2)
+    
     // Filter scheduleData for selected date
-    const startTimes = scheduleData
-      .filter((item) => item.date === date)
-      .map((item) => item.time1); // Get start times
+    const startTimes = time1
   
-    const endTimes = scheduleData
-      .filter((item) => item.date === date)
-      .map((item) => item.time2); // Get end times
+    const endTimes = time2
 
-    if (startTimes.length > 0 && endTimes.length > 0) {
+    if (startTimes && endTimes) {
       const startTime = startTimes[0]; // Get the first start time
       const endTime = endTimes[0]; // Get the first end time
   
@@ -156,11 +154,10 @@ const [mobile, setMobile] = useState('');
       setTimes([]); // No time slots available for the selected date
     }
   };
-  
-  
-  
+
   // slecting department based on doctor using id 
-  const departments = docData.filter(doctor => doctor.name === selectedDoctor).map(doctor => doctor.quali)
+  const departments = docData.filter(doctor => doctor.name === selectedDoctor).map(doctor => doctor.dept)
+ 
     
   const handleNext = () => {
     if (!selectedDoctor || !selectedDate || (!selectedTime && !null) || !patientName || !selectedGender) {
@@ -247,7 +244,6 @@ const [mobile, setMobile] = useState('');
         >
           <Picker.Item label="Select Doctor" value="" />
           {docData.map((doctor) => (
-            
             <Picker.Item key={doctor.id} label={doctor.name} value={doctor.name} />
           ))}
         </Picker>

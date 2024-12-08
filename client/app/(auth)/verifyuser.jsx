@@ -59,7 +59,6 @@ const VerifyUser = () => {
         
         // Store the mobile and OTP in AsyncStorage for later verification
         await AsyncStorage.setItem('mobile', mobile);
-        await AsyncStorage.setItem('otp', data.otp.toString()); // Temporarily store OTP
         
         // Navigate to the OTP verification page
         router.push("/verifyotp");

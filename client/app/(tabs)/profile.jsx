@@ -30,7 +30,20 @@ const Profile = () => {
       setLoading(false);
     };
     getUser();
-  }, []);
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+      // Prevent going back if user is logged in
+      if (user && user !== "") {
+        // Do nothing and prevent back navigation
+        return true;
+      }
+      // Allow back navigation if user is not logged in (i.e., on login screen)
+      return false;
+    });
+
+    // Cleanup the event listener when the component unmounts
+    return () => backHandler.remove();
+  }, [user]);
   
 
 
@@ -66,16 +79,6 @@ const Profile = () => {
     }
   }  
 
-  useEffect(() => {
-    const backAction = () =>{
-      if(user.name === undefined){
-        router.replace('/');
-      }
-    }
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-    return () => backHandler.remove();
-    
-  }, [router])
 
 
   if (loading) {

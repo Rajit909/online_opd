@@ -36,7 +36,7 @@ const BookAppointment = () => {
     getUser();
   }, []);
 
-  // console.log("user at book appoin...",user);
+
 
   const [patientData, setPatientData] = useState([]);
   // get all patients
