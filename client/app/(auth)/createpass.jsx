@@ -1,11 +1,12 @@
 import { View, Text, ScrollView, Dimensions, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import images from '@/constants/images'
 import FormField from '../components/FormField'
 import CustomButton from '../components/CustomButton'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
+import { API_END_POINT_UPDATE_PASS } from '@/api/Global'
 
 const Createpassword = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,48 +15,83 @@ const Createpassword = () => {
 
 
     const [form, setForm] = useState({
+        mobile: "",
         password: "",
         confirmPassword: "",
     });
+
+    useEffect(() => {
+        const fetchMobileNumber = async () => {
+          try {
+            const storedMobile = await AsyncStorage.getItem("mobile");
+            if (storedMobile) {
+              setForm((prevForm) => ({
+                ...prevForm,
+                mobile: storedMobile,
+              }));
+            }
+      console.log("form", storedMobile)
+
+          } catch (error) {
+            console.error("Error retrieving mobile number", error);
+          }
+        };
+        fetchMobileNumber();
+      }, []);
 
 
     const submit = async () => {
         setIsSubmitting(true);
         setError("");
         setSuccess("");
-        try {
-
-            const { password, confirmPassword } = form;
-            //get the users details from the AsyncStorage
-            const storedUsers = await AsyncStorage.getItem("users");
-            const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
-
-            // check if password and confirm password are the same
-            if (password !== confirmPassword) {
-                setError("Password and Confirm Password do not match");
-                setIsSubmitting(false);
-                return;
-            }
-            
-
-            // update the users password
-            const updateUsersDetails = parsedUsers.map((user) => {
-                if (user.mobile) {
-                    return { ...user, password };
-                }
-                return user;
-            });
-            await AsyncStorage.setItem("users", JSON.stringify(updateUsersDetails));
-            setSuccess("Password updated successfully");
-            Alert.alert("Password updated successfully");
-            router.push("/sign-in");
-
-        } catch (error) {
-            console.log(error)
-        }finally{
-            setIsSubmitting(false);
+      
+        const { mobile, password, confirmPassword } = form;
+      
+        // Client-side validation
+        if ( !password || !confirmPassword) {
+          setError("All fields are required");
+          setIsSubmitting(false);
+          return;
         }
-    }
+      
+        if (password !== confirmPassword) {
+          setError("Password does not match");
+          Alert.alert("Please enter the same password");
+          setIsSubmitting(false);
+          return;
+        }
+      
+        try {
+          const response = await fetch(`${API_END_POINT_UPDATE_PASS}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+              mobile,
+              password,
+            }).toString(),
+          });
+      
+          const result = await response.json();
+      
+          if (result.success) {
+            setSuccess(result.message || "Account created successfully");
+            setForm({
+              password: "",
+              confirmPassword: "",
+            });
+            router.push("/sign-in");
+          } else {
+            setError(result.message || "Failed to create account");
+          }
+        } catch (error) {
+          console.error("Signup error:", error);
+          setError("An error occurred. Please try again.");
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
   return (
    <>
     <SafeAreaView className="bg-gray-400 h-full">

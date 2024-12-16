@@ -46,7 +46,7 @@ const SavedPatient = ({id}) => {
   const fetchedPatient = patientData.filter((patient) => patient.mob === user.mobile)
   // find patient by id from fecthedPatient 
   const filteredPatient = fetchedPatient.find((patient) => patient.id == id)
-  console.log("filteredPatient",filteredPatient)
+  // console.log("filteredPatient",filteredPatient)
   
   useEffect(() => {
     if (filteredPatient) {
@@ -60,15 +60,10 @@ const SavedPatient = ({id}) => {
   const [patientName, setPatientName] = useState(filteredPatient ? filteredPatient.name : "");
 const [patientAge, setPatientAge] = useState(filteredPatient ? filteredPatient.age : "");
 const [mobile, setMobile] = useState('');
-
-  
   const [docData, setDocData] = useState([]);
-  
-  const [scheduleData, setScheduleData] = useState([]);
   const [times, setTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
-  // console.log(selectedDoctor, selectedDepartment, selectedDate, selectedTime, patientName, selectedGender);
 
   // get all doctors
   useEffect(() => {
@@ -81,54 +76,22 @@ const [mobile, setMobile] = useState('');
         console.error(error);
       });
   }, []);
-  console.log("docData",docData)
-
-  // get all schedule
-  useEffect(() => {
-    fetch(`${API_END_POINT_GET_ALL_SCHEDULE}`)
-      .then((response) => response.json())  
-      .then((data) => {
-        setScheduleData(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-
+  
+  // get date and time1, time2 from docData
+  const dates = docData.filter(doctor => doctor.name === selectedDoctor).map(doctor => doctor.date)
+console.log("date",dates)
   
  
-  const dates = [
-    ...new Set(
-      scheduleData
-        .map((item) => new Date(item.date))
-        .filter((date) => {
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const sevenDaysFromNow = new Date();
-          sevenDaysFromNow.setDate(today.getDate() + 1);
-          // skip sunday date
-          if(date.getDay() === 0) return false;
-          return date >= today && date <= sevenDaysFromNow;
-        })
-        .map((date) => date.toISOString().split('T')[0])
-    ),
-  ];
-
   const generateTimeSlots = (startTime, endTime) => {
     const slots = [];
     let current = new Date(`1970-01-01T${startTime}`); // Convert start time to Date object
     const end = new Date(`1970-01-01T${endTime}`); // Convert end time to Date object
-  
-    // Log current and end times
-    // console.log("Current Time:", current);
-    // console.log("End Time:", end);
-  
+
     while (current <= end) {
       slots.push(current.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Add time in HH:MM format
       current = new Date(current.getTime() + 10 * 60000); // Increment by 10 minutes
     }
   
-    // console.log("Generated Time Slots:", slots); // Log generated slots
     return slots;
   };
   
@@ -138,9 +101,8 @@ const [mobile, setMobile] = useState('');
     const time1 = docData.filter(doctor => doctor.name === selectedDoctor).map(doctor => doctor.time1)
     const time2 = docData.filter(doctor => doctor.name === selectedDoctor).map(doctor => doctor.time2)
     
-    // Filter scheduleData for selected date
+    //  for selected date
     const startTimes = time1
-  
     const endTimes = time2
 
     if (startTimes && endTimes) {
@@ -190,14 +152,7 @@ const [mobile, setMobile] = useState('');
     <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
       <ScrollView>
-      {/* <Text style={styles.label}>Patient Name</Text> */}
-        {/* <TextInput
-          style={styles.input}
-          placeholder="Enter patient name"
-          value={patientName}
-          onChangeText={setPatientName}
-        /> */}
-
+      
         <Text style={styles.label}>Patient Age</Text>
         <TextInput
           style={styles.input} 
@@ -265,6 +220,7 @@ const [mobile, setMobile] = useState('');
             {dates.map((date, index) => (
               <Picker.Item key={index} label={date} value={date} />
             ))}
+           
           </Picker>
 
           {/* Time Selection */}

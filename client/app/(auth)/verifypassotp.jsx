@@ -1,61 +1,71 @@
 import { View, Text, ScrollView, Dimensions, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import images from '@/constants/images'
 import FormField from '../components/FormField'
 import CustomButton from '../components/CustomButton'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
+import { API_END_POINT_VERIFY_OTP } from '@/api/Global'
 
 const VerifyPassOtp = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [mobile, setMobile] = useState("");
     
+    useEffect(() => {
+      // fetch mobile number from async storage
+      AsyncStorage.getItem("mobile").then((mobile) => {
+        setMobile(mobile);
+      });
+    }, []);
+
     const [form, setForm] = useState({
       otp: "",
     });
 
-
     const submit = async () => {
-        setIsSubmitting(true);
-        setError("");
-        setSuccess("");
-        try {
-          const userOtp = await AsyncStorage.getItem("userotp");
-          // console.log(userOtp)
-            const { otp } = form;
-            //get the users details from the AsyncStorage
-            const storedUsers = await AsyncStorage.getItem("users");
-            const parsedUsers = storedUsers ? JSON.parse(storedUsers) : [];
-            const userMobile = await AsyncStorage.getItem("usermobile");
-            // console.log(userMobile)
+      setIsSubmitting(true);
+      setError("");
+      setSuccess("");
+      try {
+        // fetch mobile number from async storage
+        AsyncStorage.getItem("mobile").then((mobile) => {
+          setMobile(mobile);
+        });
+        const { otp } = form;
 
-            // find the user with the mobile number
-            const userDetails = await AsyncStorage.getItem("userdetails");
-           
+        const response = await fetch(`${API_END_POINT_VERIFY_OTP}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ otp, mobile: mobile}),
+        })
+    
+        const data = await response.json(); 
+        console.log(data)
 
-            // check if the otp is valid
-            // console.log(parsedUsers)
-            
-            if (userOtp == otp) {
-                setSuccess("Otp verified successfully");
-                Alert.alert("Otp verified successfully");
-                // login the user
-                await AsyncStorage.setItem("user", JSON.stringify(userDetails));
-                router.push("/createpass");
-                setForm({ otp: "" });
-            }else{
-                setError("Invalid Otp");
-                setIsSubmitting(false);
-                return;
-            }
-        } catch (error) {
-            console.log(error)
-        }finally{
-            setIsSubmitting(false);
+        if(!response.ok){
+          setError(data.message);
+          setIsSubmitting(false);
+          return;
         }
-    }
+       
+        if(data.message === "OTP verified and deleted successfully"){
+          setSuccess("OTP verified successfully");
+          router.push("/createpass");
+        }
+        
+      } catch (error) {
+        setError(error.message);
+        console.log(error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+    
   return (
    <>
     <SafeAreaView className="bg-gray-400 h-full">
@@ -71,23 +81,31 @@ const VerifyPassOtp = () => {
            style={{
               minHeight: Dimensions.get("window").height - 100,
             }}>
-                <Image
+            <Image
               source={images.logo}
               style={{ width: 220, height: 220 }}
               resizeMode="contain"
             />
             <Text className=' text-xl text-gray-200 font-bold'>Verify Otp</Text>
             <Text>{}</Text>
-            <Text className=' text-gray-200 text-wrap'>Enter Otp below to verify mobile number to create new password </Text>
+            <Text className=' text-gray-200'>Enter Otp below to verify mobile number </Text>
+            
             <FormField
-                title="Otp"
-                required={true}
-                placeholder="Enter Otp "
-                otherStyles="mt-5"
-                onChangeText={(e) => setForm({ ...form, otp: e })}
-                value={form.otp}
+              title="Mobile Number"
+              required={true}
+              otherStyles="mt-5"
+              value={mobile}
+              onChangeText={(e) => setMobile(mobile)}
             />
-
+            <FormField
+              title="Otp"
+              required={true}
+              placeholder="Enter Otp"
+              otherStyles="mt-5"
+              onChangeText={(e) => setForm({ ...form, otp: e })}
+              value={form.otp}
+            />
+            
             {
                 error ? <Text className="text-red-500 text-sm mt-2">{error}</Text> : null
                 }
@@ -104,7 +122,6 @@ const VerifyPassOtp = () => {
             </View>
         </ScrollView>
         </SafeAreaView>
-   
    </>
   )
 }

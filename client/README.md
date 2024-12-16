@@ -55,6 +55,11 @@ Join our community of developers creating universal apps.
 ```bash 
 eas build --profile development --platform android
 ```
+or
+
+```bash
+eas build -p android --profile preview
+```
 
 ## Create build for iOS
 

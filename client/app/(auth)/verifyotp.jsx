@@ -25,7 +25,6 @@ const VerifyOtp = () => {
       otp: "",
     });
 
-
     const submit = async () => {
       setIsSubmitting(true);
       setError("");
