@@ -28,7 +28,6 @@ const BookAppointment = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      // Fetch user details from AsyncStorage
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
       setUser(parsedUser.user);
@@ -37,8 +36,8 @@ const BookAppointment = () => {
   }, []);
 
 
-
   const [patientData, setPatientData] = useState([]);
+
   // get all patients
   useEffect(() => {
     fetch(`${API_END_POINT_GET_ALL_PATIENT}`)
@@ -51,14 +50,11 @@ const BookAppointment = () => {
       });
   }, []);
 
-  // console.log("Patient",patientData)
 
   // Fetch patients by mobile number
-  const fetchPatient = patientData.filter((patient) => patient.mob === user.mobile)
-  // console.log("fetchPatient",fetchPatient)
+  const fetchPatient = patientData?.filter((patient) => patient.mobile === user.mobile)
 
-
-
+  
   // Components to render based on selection
   const renderComponent = () => {
     if (selectedValue === "other") {

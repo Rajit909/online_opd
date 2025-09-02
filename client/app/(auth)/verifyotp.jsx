@@ -34,6 +34,7 @@ const VerifyOtp = () => {
         AsyncStorage.getItem("mobile").then((mobile) => {
           setMobile(mobile);
         });
+
         const { otp } = form;
 
         const response = await fetch(`${API_END_POINT_VERIFY_OTP}`, {
@@ -45,7 +46,7 @@ const VerifyOtp = () => {
         })
     
         const data = await response.json(); 
-        console.log(data)
+        console.log("data", data)
 
         if(!response.ok){
           setError(data.message);
@@ -54,7 +55,7 @@ const VerifyOtp = () => {
         }
        
         if(data.message === "OTP verified successfully"){
-          setSuccess("OTP verified successfully");
+          setSuccess(data.message);
           router.push("/sign-up");
         }
         

@@ -35,6 +35,7 @@ const VerifyUser = () => {
       return;
     }
 
+
     try {
       // Send mobile number to the backend to check if it exists
       const response = await fetch(`${API_END_POINT_VERIFY_MOBILE}`, {
@@ -45,6 +46,8 @@ const VerifyUser = () => {
         body: JSON.stringify({ mobile: mobile }),
       });
 
+      console.log("mobile", mobile)
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -52,7 +55,7 @@ const VerifyUser = () => {
         setIsSubmitting(false);
         return;
       }
-
+      console.log("otp",data.otp)
       // If the response is successful, OTP is sent successfully
       if (data.message === 'OTP sent successfully') {
         setSuccess('OTP sent successfully');

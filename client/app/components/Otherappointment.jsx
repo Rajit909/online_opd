@@ -28,7 +28,8 @@ const OtherAppointment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
   const [user, setUser] = useState({});
-  const [name, setName] = useState("");
+  const [first_name, setFirst_name] = useState("");
+  const [last_name, setLast_name] = useState("");
   const [age, setAge] = useState("");
   const [selectedGender, setSelectedGender] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -86,7 +87,7 @@ const OtherAppointment = () => {
     setIsLoading(true);
 
     if (
-      !name ||
+      !first_name ||
       !fname ||
       !mobile ||
       !address ||
@@ -113,7 +114,8 @@ const OtherAppointment = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
+          first_name,
+          last_name,
           fname,
           mob: mobile,
           email,
@@ -150,12 +152,19 @@ const OtherAppointment = () => {
       <SafeAreaView style={styles.container}>
         <ScrollView keyboardShouldPersistTaps="handled">
           {isLoading && <ActivityIndicator size="large" color="#007bff" />}
-          <Text style={styles.label}>Patient Name</Text>
+          <Text style={styles.label}>First Name</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter patient name"
-            value={name}
-            onChangeText={setName}
+            placeholder="Enter patient first name"
+            value={first_name}
+            onChangeText={setFirst_name}
+          />
+          <Text style={styles.label}>Last Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter patient last name"
+            value={last_name}
+            onChangeText={setLast_name}
           />
           <Text style={styles.label}>Father/Husband Name</Text>
           <TextInput

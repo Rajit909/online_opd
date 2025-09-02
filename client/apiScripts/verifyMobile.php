@@ -23,7 +23,7 @@ if (empty($mobile)) {
 
 try {
     // Check if the user already exists in the database
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE mobile = :mobile");
+    $stmt = $pdo->prepare("SELECT * FROM patient_profile WHERE mobile = :mobile");
     $stmt->execute(['mobile' => $mobile]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
