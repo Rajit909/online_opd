@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
-import { router, SplashScreen, Stack } from "expo-router";
+import { router, SplashScreen, Stack, useRootNavigationState } from "expo-router";
 import "../global.css";
 import { useFonts } from "expo-font";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,18 +9,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
-  useEffect(() => {
-    const checkAuth = async () => {
-      const user = await AsyncStorage.getItem('user');
-      if (user) {
-        router.push('/home');
-      } else {
-        router.push('/');
-      }
-    };
 
-    checkAuth();
-  })
+    const rootNavigationState = useRootNavigationState();
+  // useEffect(() => {
+  //    if (rootNavigationState?.key) {
+  //   const checkAuth = async () => {
+  //     const user = await AsyncStorage.getItem('user');
+  //     if (user) {
+  //       router.push('/home');
+  //     } else {
+  //       router.push('/');
+  //     }
+  //   };
+
+  //   checkAuth();
+  // }
+  // }, [ ])
 
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),

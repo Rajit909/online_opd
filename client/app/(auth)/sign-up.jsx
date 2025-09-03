@@ -41,29 +41,26 @@ const SignUp = () => {
     setIsSubmitting(true);
     setError("");
     setSuccess("");
-  
+
     const { firstname, lastname, mobile, password, confirmPassword } = form;
-  
-    // Client-side validation
+
     if (!firstname || !lastname || !password || !confirmPassword) {
       setError("All fields are required");
       setIsSubmitting(false);
       return;
     }
-  
+
     if (password !== confirmPassword) {
-      setError("Password does not match");
-      Alert.alert("Please enter the same password");
+      setError("Passwords do not match");
+      Alert.alert("Validation Error", "Please enter the same password.");
       setIsSubmitting(false);
       return;
     }
-  
+
     try {
       const response = await fetch(`${API_END_POINT_SIGN_UP}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
           firstname,
           lastname,
@@ -71,11 +68,11 @@ const SignUp = () => {
           password,
         }).toString(),
       });
-  
+
       const result = await response.json();
-  
+
       if (result.success) {
-        setSuccess(result.message || "Account created successfully");
+        setSuccess(result.message || "Account created successfully!");
         setForm({
           firstname: "",
           lastname: "",
@@ -85,7 +82,7 @@ const SignUp = () => {
         });
         router.push("/sign-in");
       } else {
-        setError(result.message || "Failed to create account");
+        setError(result.message || "Failed to create account.");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -94,72 +91,91 @@ const SignUp = () => {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
-    <SafeAreaView className="bg-gray-400 h-full">
+    <SafeAreaView className="flex-1 bg-gradient-to-b from-blue-50 to-white">
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          alignItems: "center",
           justifyContent: "center",
-          paddingVertical: 20,
+          paddingHorizontal: 24,
+          paddingVertical: 40,
+          minHeight: Dimensions.get("window").height - 100,
         }}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <View
-          className="text-2xl font-semibold text-white"
-          style={{ minHeight: Dimensions.get("window").height - 100 }}
-        >
+        {/* Logo */}
+        <View className="items-center mb-6">
           <Image
             source={images.logo}
-            style={{ width: 220, height: 120 }}
+            style={{ width: 200, height: 120 }}
             resizeMode="contain"
           />
-          <Text className="text-white text-2xl font-bold">Create Account</Text>
-          <FormField
-            title="First Name"
-            placeholder="Enter your first name"
-            otherStyles="mt-5"
-            value={form.firstname}
-            onChangeText={(e) => setForm({ ...form, firstname: e })}
-          />
-          <FormField
-            title="Last Name"
-            placeholder="Enter your last name"
-            otherStyles="mt-5"
-            value={form.lastname}
-            onChangeText={(e) => setForm({ ...form, lastname: e })}
-          />
-          <FormField
-            title={"Password"}
-            placeholder={"Enter Password"}
-            otherStyles="mt-5"
-            value={form.password}
-            onChangeText={(e) => setForm({ ...form, password: e })}
-          />
-          <FormField
-            title={"Confirm Password"}
-            placeholder={"Confirm Password"}
-            otherStyles="mt-5"
-            value={form.confirmPassword}
-            onChangeText={(e) => setForm({ ...form, confirmPassword: e })}
-          />
-          {error && (
-            <Text className="text-red-600 text-center mt-5">{error}</Text>
-          )}
-          {success && (
-            <Text className="text-green-500 text-center mt-5">{success}</Text>
-          )}
-          <CustomButton
-            title="Create Account"
-            containerStyle="mt-5"
-            handlePress={submit}
-            isLoading={isSubmitting}
-          />
-          <Text className="text-center my-5">
-            Already have an account? <Link href={"/verifyuser"}>Log In</Link>
+        </View>
+
+        {/* Title */}
+        <View className="items-center mb-8">
+          <Text className="text-3xl font-extrabold text-blue-900">
+            Create Account
+          </Text>
+          <Text className="text-base text-gray-600 text-center mt-2">
+            Join us to book appointments and access services easily.
           </Text>
         </View>
+
+        {/* Form Fields */}
+        <FormField
+          title="First Name"
+          placeholder="Enter your first name"
+          otherStyles="mt-2"
+          value={form.firstname}
+          onChangeText={(e) => setForm({ ...form, firstname: e })}
+        />
+        <FormField
+          title="Last Name"
+          placeholder="Enter your last name"
+          otherStyles="mt-6"
+          value={form.lastname}
+          onChangeText={(e) => setForm({ ...form, lastname: e })}
+        />
+        <FormField
+          title="Password"
+          placeholder="Enter password"
+          otherStyles="mt-6"
+          value={form.password}
+          onChangeText={(e) => setForm({ ...form, password: e })}
+          secureTextEntry
+        />
+        <FormField
+          title="Confirm Password"
+          placeholder="Confirm password"
+          otherStyles="mt-6"
+          value={form.confirmPassword}
+          onChangeText={(e) => setForm({ ...form, confirmPassword: e })}
+          secureTextEntry
+        />
+
+        {/* Error / Success */}
+        {error ? <Text className="text-red-500 text-center mt-4">{error}</Text> : null}
+        {success ? <Text className="text-green-600 text-center mt-4">{success}</Text> : null}
+
+        {/* Button */}
+        <CustomButton
+          title="Create Account"
+          containerStyle="bg-blue-600 rounded-full py-4 mt-10 shadow-md"
+          textStyle="text-white text-lg font-semibold"
+          handlePress={submit}
+          isLoading={isSubmitting}
+        />
+
+        {/* Footer */}
+        <Text className="text-center mt-6 text-gray-600">
+          Already have an account?{" "}
+          <Link href={"/sign-in"} className="text-blue-700 font-semibold">
+            Log In
+          </Link>
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );

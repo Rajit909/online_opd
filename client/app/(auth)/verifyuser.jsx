@@ -1,25 +1,18 @@
-import { View, Text, ScrollView, Dimensions, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import images from '@/constants/images'
-import FormField from '../components/FormField'
-import CustomButton from '../components/CustomButton'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Link, router } from 'expo-router'
-import { store } from 'expo-router/build/global-state/router-store'
-import { API_END_POINT_VERIFY_MOBILE } from '@/api/Global'
+import { View, Text, ScrollView, Dimensions, Image } from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import images from "@/constants/images";
+import FormField from "../components/FormField";
+import CustomButton from "../components/CustomButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Link, router } from "expo-router";
+import { API_END_POINT_VERIFY_MOBILE } from "@/api/Global";
 
 const VerifyUser = () => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
-
-
-    const [form, setForm] = useState({
-        mobile: "",
-    });
-
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [form, setForm] = useState({ mobile: "" });
 
   const submit = async () => {
     setIsSubmitting(true);
@@ -28,47 +21,36 @@ const VerifyUser = () => {
 
     const { mobile } = form;
 
-    // Check if the mobile number is valid
     if (!mobile) {
-      setError("Mobile Number is required");
+      setError("Mobile number is required");
       setIsSubmitting(false);
       return;
     }
 
-
     try {
-      // Send mobile number to the backend to check if it exists
       const response = await fetch(`${API_END_POINT_VERIFY_MOBILE}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ mobile: mobile }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile }),
       });
-
-      console.log("mobile", mobile)
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Something went wrong');
+        setError(data.error || "Something went wrong");
         setIsSubmitting(false);
         return;
       }
-      console.log("otp",data.otp)
-      // If the response is successful, OTP is sent successfully
-      if (data.message === 'OTP sent successfully') {
-        setSuccess('OTP sent successfully');
-        
-        // Store the mobile and OTP in AsyncStorage for later verification
-        await AsyncStorage.setItem('mobile', mobile);
-        
-        // Navigate to the OTP verification page
+
+      if (data.message === "OTP sent successfully") {
+        setSuccess("OTP sent successfully");
+
+        await AsyncStorage.setItem("mobile", mobile);
+
         router.push("/verifyotp");
       }
-
     } catch (error) {
-      setError('Error sending OTP');
+      setError("Error sending OTP. Please try again.");
       console.log(error);
     } finally {
       setIsSubmitting(false);
@@ -76,63 +58,80 @@ const VerifyUser = () => {
   };
 
   return (
-   <>
-    <SafeAreaView className="bg-gray-400 h-full">
-        <ScrollView
-          contentContainerStyle={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            // justifyContent: "center",
-          }}
-        >
-          <View  className="text-2xl font-semibold text-white"
-           style={{
-              minHeight: Dimensions.get("window").height - 100,
-            }}>
-                <Image
-              source={images.logo}
-              style={{ width: 220, height: 220 }}
-              resizeMode="contain"
-            />
-            <Text className=' text-xl text-gray-200 font-bold'>Verify account </Text>
-            <Text className=' text-gray-200'>Enter your Mobile Number below to Verify your account</Text>
-            <FormField
-                title="Mobile Number"
-                required={true}
-                placeholder="Enter Mobile Number"
-                otherStyles="mt-5"
-                onChangeText={(e) => setForm({ ...form, mobile: e })}
-                value={form.mobile}
-                keyboardType="number-pad"
-            />
+    <SafeAreaView className="flex-1 bg-gradient-to-b from-blue-50 to-white">
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 24,
+          paddingVertical: 40,
+          minHeight: Dimensions.get("window").height - 100,
+        }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Logo */}
+        <View className="items-center mb-6">
+          <Image
+            source={images.logo}
+            style={{ width: 200, height: 200 }}
+            resizeMode="contain"
+          />
+        </View>
 
-            {
-                error ? <Text className="text-red-500 text-sm mt-2">{error}</Text> : null
-                }
-                {
-                success ? <Text className="text-green-500 text-sm mt-2">{success}</Text> : null
-            }
+        {/* Title */}
+        <View className="items-center mb-8">
+          <Text className="text-3xl font-extrabold text-blue-900">
+            Verify Account
+          </Text>
+          <Text className="text-base text-gray-600 text-center mt-2">
+            Enter your registered mobile number to verify your account.
+          </Text>
+        </View>
 
-            <CustomButton
-              title="Verify"
-              containerStyle="mt-10"
-              handlePress={submit}
-              isLoading={isSubmitting}
-            />
+       <View className="w-[80%]">
+         {/* Input Field */}
+        <FormField
+          title="Mobile Number"
+          required={true}
+          placeholder="Enter Mobile Number"
+          otherStyles="mt-1"
+          onChangeText={(e) => setForm({ ...form, mobile: e })}
+          value={form.mobile}
+          keyboardType="number-pad"
+        />
+       </View>
 
-            <Text className="text-center mt-5">
-              Already have an Account?{" "}
-              <Link href={"/sign-in"} className='text-blue-800 font-psemibold'>
-                Sign In
-              </Link>
-            </Text>
-            </View>
-        </ScrollView>
-        </SafeAreaView>
-   
-   </>
-  )
-}
+        {/* Error / Success */}
+        {error ? (
+          <Text className="text-red-500 text-sm text-center mt-3">{error}</Text>
+        ) : null}
+        {success ? (
+          <Text className="text-green-600 text-sm text-center mt-3">
+            {success}
+          </Text>
+        ) : null}
 
-export default VerifyUser
+        {/* Button */}
+        <CustomButton
+          title="Verify"
+          containerStyle="bg-blue-600 rounded-full mt-10 shadow-md w-[80%]"
+          textStyle="text-white text-lg font-semibold"
+          handlePress={submit}
+          isLoading={isSubmitting}
+        />
+
+        {/* Footer */}
+        <Text className="text-center mt-6 text-gray-600">
+          Already have an account?{" "}
+          <Link href={"/sign-in"} className="text-blue-700 font-semibold">
+            Sign In
+          </Link>
+        </Text>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default VerifyUser;

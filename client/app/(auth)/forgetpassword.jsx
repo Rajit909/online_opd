@@ -1,24 +1,21 @@
-import { View, Text, ScrollView, Dimensions, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import images from '@/constants/images'
-import FormField from '../components/FormField'
-import CustomButton from '../components/CustomButton'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Link, router } from 'expo-router'
-import {  API_END_POINT_VERIFY_PASS_MOBILE } from '@/api/Global'
+import { View, Text, ScrollView, Dimensions, Image } from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import images from "@/constants/images";
+import FormField from "../components/FormField";
+import CustomButton from "../components/CustomButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Link, router } from "expo-router";
+import { API_END_POINT_VERIFY_PASS_MOBILE } from "@/api/Global";
 
 const ForgetPassword = () => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-
-    const [form, setForm] = useState({
-        mobile: "",
-    });
-
-
+  const [form, setForm] = useState({
+    mobile: "",
+  });
 
   const submit = async () => {
     setIsSubmitting(true);
@@ -27,7 +24,6 @@ const ForgetPassword = () => {
 
     const { mobile } = form;
 
-    // Check if the mobile number is valid
     if (!mobile) {
       setError("Mobile Number is required");
       setIsSubmitting(false);
@@ -35,11 +31,10 @@ const ForgetPassword = () => {
     }
 
     try {
-      // Send mobile number to the backend to check if it exists
       const response = await fetch(`${API_END_POINT_VERIFY_PASS_MOBILE}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ mobile: mobile }),
       });
@@ -47,24 +42,20 @@ const ForgetPassword = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Something went wrong');
+        setError(data.error || "Something went wrong");
         setIsSubmitting(false);
         return;
       }
 
-      // If the response is successful, OTP is sent successfully
-      if (data.message === 'OTP sent successfully') {
-        setSuccess('OTP sent successfully');
-        
-        // Store the mobile and OTP in AsyncStorage for later verification
-        await AsyncStorage.setItem('mobile', mobile);
-        
-        // Navigate to the OTP verification page
+      if (data.message === "OTP sent successfully") {
+        setSuccess("OTP sent successfully");
+
+        await AsyncStorage.setItem("mobile", mobile);
+
         router.push("/verifypassotp");
       }
-
     } catch (error) {
-      setError('Error sending OTP');
+      setError("Error sending OTP");
       console.log(error);
     } finally {
       setIsSubmitting(false);
@@ -72,65 +63,71 @@ const ForgetPassword = () => {
   };
 
   return (
-   <>
-    <SafeAreaView className="bg-gray-400 h-full">
-        <ScrollView
-          contentContainerStyle={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            // justifyContent: "center",
-          }}
-        >
-          <View  className="text-2xl font-semibold text-white"
-           style={{
-              minHeight: Dimensions.get("window").height - 100,
-            }}>
-                <Image
-              source={images.logo}
-              style={{ width: 220, height: 220 }}
-              resizeMode="contain"
-            />
-            <Text className=' text-xl text-gray-200 font-bold'>Reset Password </Text>
-            <Text className=' text-gray-200'>Enter your Mobile Number below to Reset Your Password</Text>
-            <FormField
-                title="Mobile Number"
-                required={true}
-                placeholder="Enter Mobile Number"
-                otherStyles="mt-5"
-                onChangeText={(e) => setForm({ ...form, mobile: e })}
-                value={form.mobile}
-                keyboardType="number-pad"
-            />
+    <SafeAreaView className="flex-1 bg-gradient-to-b from-blue-50 to-white">
+      <ScrollView
+        contentContainerStyle={{
+          minHeight: Dimensions.get("window").height - 50,
+          paddingHorizontal: 20,
+          paddingTop: 40,
+          alignItems: "center",
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Logo */}
+        <Image
+          source={images.logo}
+          style={{ width: 200, height: 200 }}
+          resizeMode="contain"
+        />
 
-            {
-                error ? <Text className="text-red-500 text-sm mt-2">{error}</Text> : null
-                }
-                {
-                success ? <Text className="text-green-500 text-sm mt-2">{success}</Text> : null
-            }
+        {/* Heading */}
+        <Text className="text-2xl font-extrabold text-blue-900 mt-6">
+          Reset Password
+        </Text>
+        <Text className="text-base text-gray-600 text-center mt-2 px-4">
+          Enter your registered mobile number below. We’ll send you an OTP to
+          reset your password.
+        </Text>
 
-            <CustomButton
-              title="Verify"
-              containerStyle="mt-10"
-              handlePress={submit}
-              isLoading={isSubmitting}
-            />
+        {/* Input */}
+        <View className="w-full mt-6">
+          <FormField
+            title="Mobile Number"
+            required={true}
+            placeholder="Enter Mobile Number"
+            otherStyles="w-full"
+            onChangeText={(e) => setForm({ ...form, mobile: e })}
+            value={form.mobile}
+            keyboardType="number-pad"
+          />
+        </View>
 
-            <Text className="text-center mt-5">
-              Already have an password?{" "}
-              <Link href={"/sign-in"} className='text-blue-800 font-psemibold'>
-                Sign In
-              </Link>
-            </Text>
-            </View>
-        </ScrollView>
-        </SafeAreaView>
-   
-   </>
-  )
-}
+        {/* Error & Success Messages */}
+        {error ? (
+          <Text className="text-red-500 text-sm mt-2">{error}</Text>
+        ) : null}
+        {success ? (
+          <Text className="text-green-600 text-sm mt-2">{success}</Text>
+        ) : null}
 
-export default ForgetPassword
+        {/* Button */}
+        <CustomButton
+          title="Send OTP"
+          containerStyle="mt-8 w-full"
+          handlePress={submit}
+          isLoading={isSubmitting}
+        />
 
+        {/* Footer */}
+        <Text className="text-center text-gray-600 mt-6">
+          Remembered your password?{" "}
+          <Link href={"/sign-in"} className="text-blue-700 font-semibold">
+            Sign In
+          </Link>
+        </Text>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
+export default ForgetPassword;
