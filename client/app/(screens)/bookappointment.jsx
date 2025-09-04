@@ -3,11 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  TextInput,
   ScrollView,
-  Alert,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "@react-native-picker/picker";
@@ -19,12 +15,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_END_POINT_GET_ALL_PATIENT } from "@/api/Global";
 
 const BookAppointment = () => {
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedValue, setSelectedValue] = useState(""); // No default selection
-  const [selectedPatient, setSelectedPatient] = useState(null); // To store selected patient details
+  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [user, setUser] = useState({});
+  const [patientData, setPatientData] = useState([]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -35,64 +29,49 @@ const BookAppointment = () => {
     getUser();
   }, []);
 
-
-  const [patientData, setPatientData] = useState([]);
-
-  // get all patients
   useEffect(() => {
     fetch(`${API_END_POINT_GET_ALL_PATIENT}`)
       .then((response) => response.json())
-      .then((data) => {
-        setPatientData(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((data) => setPatientData(data))
+      .catch((error) => console.error(error));
   }, []);
 
+  const fetchPatient = patientData?.filter(
+    (patient) => patient.mobile === user.mobile
+  );
 
-  // Fetch patients by mobile number
-  const fetchPatient = patientData?.filter((patient) => patient.mobile === user.mobile)
-
-  
-  // Components to render based on selection
   const renderComponent = () => {
-    if (selectedValue === "other") {
-      return <OtherAppointment />;
-    }
-    if (selectedValue) {
-      return <SavedPatient id={selectedValue}/>;
-    }
+    if (selectedValue === "other") return <OtherAppointment />;
+    if (selectedValue) return <SavedPatient id={selectedValue} />;
     return null;
   };
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <ScrollView>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
           <BackBtn
             styles={{ paddingHorizontal: 10, paddingVertical: 20 }}
             handlePress={() => router.replace("/home")}
           />
+
           <Text style={styles.heading}>Book Appointment</Text>
 
-          <Text style={styles.label}>Appointment for</Text>
+          <Text style={styles.label}>Appointment For</Text>
 
           {/* Patient Selection */}
-          <View style={styles.container}>
+          <View style={styles.card}>
             <Picker
               selectedValue={selectedValue}
               style={styles.picker}
+              dropdownIconColor="#555"
               onValueChange={(itemValue) => {
                 setSelectedValue(itemValue);
-
-                // Update the selected patient details if it matches a saved patient
                 const patient = fetchPatient.find((p) => p.id === itemValue);
                 setSelectedPatient(patient);
               }}
             >
               <Picker.Item label="Select patient" value="" />
-              {/* List all saved patients */}
               {fetchPatient.map((patient) => (
                 <Picker.Item
                   key={patient.id}
@@ -102,10 +81,10 @@ const BookAppointment = () => {
               ))}
               <Picker.Item label="Add Other patient" value="other" />
             </Picker>
-
-            {/* Render the selected component */}
-            <View style={styles.componentContainer}>{renderComponent()}</View>
           </View>
+
+          {/* Render selected component */}
+          <View style={styles.componentContainer}>{renderComponent()}</View>
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -115,22 +94,42 @@ const BookAppointment = () => {
 export default BookAppointment;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f5f5f5" },
+  container: { flex: 1, backgroundColor: "#f5f6fa" },
+  scrollContent: { paddingBottom: 30 },
   heading: {
-    fontSize: 24,
-    fontWeight: "bold",
-    margin: 20,
-    alignSelf: "center",
+    fontSize: 26,
+    fontWeight: "700",
+    marginTop: 10,
+    marginBottom: 10,
+    textAlign: "center",
+    color: "#333",
   },
-  label: { fontSize: 18, marginVertical: 10, marginLeft: 20 },
-  picker: {
+  label: {
+    fontSize: 18,
+    fontWeight: "500",
+    marginTop: 20,
+    marginBottom: 8,
+    marginLeft: 20,
+    color: "#555",
+  },
+  card: {
     marginHorizontal: 20,
     backgroundColor: "#fff",
-    borderRadius: 5,
-    borderColor: "#ddd",
-    borderWidth: 1,
-    padding: 10,
-    minHeight: 20,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  componentContainer: { marginTop: 20 },
+  picker: {
+    width: "100%",
+    height: 70,
+    borderRadius: 3
+  },
+  componentContainer: {
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
 });

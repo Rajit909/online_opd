@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "online_opd",
-    "slug": "online_opd",
+    "name": "gangasheel",
+    "slug": "gangasheel",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -18,10 +18,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "online_opd.apk"
+      "package": "gangasheel.apk"
     },
     "web": {
       "bundler": "metro",
@@ -37,8 +37,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "3744fce3-a128-4fd2-b485-bc5c02b54781"
+        "projectId": "d7ce82bb-bb24-4c4e-9857-4f20f1eec6c8"
       }
-    }
+    },
+    "owner": "rajitkumar"
   }
 }

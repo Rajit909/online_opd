@@ -1,6 +1,12 @@
-import { View, Text, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Banner from '../components/Banner';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/Header';
 import BackBtn from '../components/BackBtn';
@@ -9,20 +15,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OpdReport = () => {
   const [user, setUser] = useState({});
-  const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [refreshing, setRefreshing] = useState(false);
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => setRefreshing(false), 2000);
   }, []);
 
-
   useEffect(() => {
     const getUser = async () => {
-      // Fetch user details from AsyncStorage
-      const storedUser = await AsyncStorage.getItem("user");
+      const storedUser = await AsyncStorage.getItem('user');
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
       setLoading(false);
       setUser(parsedUser.user);
@@ -30,70 +33,53 @@ const OpdReport = () => {
     getUser();
   }, []);
 
-  // console.log("user's appointments",user.appointments);
-
   const opdReport = [
     {
       id: 1,
-      opdreport : "No report available"
-    }
-  ]
-
-
+      opdreport: 'No report available',
+    },
+  ];
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#0000ff" />
+      <View style={styles.loaderWrapper}>
+        <ActivityIndicator size="large" color="#4285F4" />
       </View>
     );
   }
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="h-full">
-        <ScrollView contentContainerStyle={{ height: '100vh', display: 'flex' }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 30 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
-            <Header name={user? user.name: "Guest"} />
-          <View style={{paddingHorizontal:10}}>
+          {/* Header */}
+          <Header name={user ? user.name : 'Guest'} />
+
+          {/* Back Button */}
+          <View style={{ paddingHorizontal: 16 }}>
             <BackBtn
               styles={{ paddingVertical: 10 }}
               handlePress={() => router.replace('/home')}
             />
 
-            <Text style={{ fontSize: 24, fontWeight: 'bold', marginTop: 20 }}>Opd Reports</Text>
+            {/* Title */}
+            <Text style={styles.title}>OPD Reports</Text>
 
-            {
-             opdReport?.length > 0 ? (
+            {/* Reports List */}
+            {opdReport?.length > 0 ? (
               opdReport.map((item) => (
-                <View
-                  key={item.id}
-                  style={{
-                    marginVertical: 10,
-                    padding: 15,
-                    backgroundColor: '#f9f9f9',
-                    borderRadius: 8,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 3,
-                  }}
-                >
-                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Doctor's Report: {item.opdreport}</Text>
-                  
+                <View key={item.id} style={styles.reportCard}>
+                  <Text style={styles.reportText}>
+                    Doctor's Report: {item.opdreport}
+                  </Text>
                 </View>
               ))
             ) : (
-              <Text style={{ marginTop: 20 }}></Text>
-            )
-            
-            }
+              <Text style={styles.noReportText}>No reports available.</Text>
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -102,3 +88,42 @@ const OpdReport = () => {
 };
 
 export default OpdReport;
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  loaderWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '600',
+    marginTop: 20,
+    color: '#111',
+  },
+  reportCard: {
+    marginVertical: 10,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  reportText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+  },
+  noReportText: {
+    marginTop: 20,
+    fontSize: 16,
+    color: '#777',
+    textAlign: 'center',
+  },
+});

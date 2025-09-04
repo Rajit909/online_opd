@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   TextInput,
   ScrollView,
@@ -110,9 +109,7 @@ const OtherAppointment = () => {
     try {
       const response = await fetch(API_END_POINT_SAVE_PATIENT, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           first_name,
           last_name,
@@ -150,133 +147,157 @@ const OtherAppointment = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <ScrollView keyboardShouldPersistTaps="handled">
-          {isLoading && <ActivityIndicator size="large" color="#007bff" />}
-          <Text style={styles.label}>First Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter patient first name"
-            value={first_name}
-            onChangeText={setFirst_name}
-          />
-          <Text style={styles.label}>Last Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter patient last name"
-            value={last_name}
-            onChangeText={setLast_name}
-          />
-          <Text style={styles.label}>Father/Husband Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter father/husband name"
-            value={fname}
-            onChangeText={setFname}
-          />
-          <Text style={styles.label}>Patient Age</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter patient age"
-            value={age}
-            onChangeText={setAge}
-            keyboardType="number-pad"
-          />
-          <Text style={styles.label}>Select Gender</Text>
-          <View style={styles.genderContainer}>
-            {["Male", "Female"].map((gender) => (
-              <TouchableOpacity
-                key={gender}
-                style={[
-                  styles.genderButton,
-                  selectedGender === gender && styles.selected,
-                ]}
-                onPress={() => setSelectedGender(gender)}
-              >
-                <Text
-                  style={
-                    selectedGender === gender
-                      ? styles.selectedText
-                      : styles.genderText
-                  }
-                >
-                  {gender}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        {isLoading && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#007bff" />
           </View>
-          <Text style={styles.label}>Marital status</Text>
-          <Picker
-            selectedValue={selectedStatus}
-            onValueChange={setSelectedStatus}
-            style={styles.picker}
-          >
-            <Picker.Item label="Select status" value="" />
-            {MARITAL_STATUSES.map((status) => (
-              <Picker.Item key={status} label={status} value={status} />
-            ))}
-          </Picker>
-          <Text style={styles.label}>Mobile</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter mobile no."
-            value={mobile}
-            onChangeText={setMobile}
-            keyboardType="number-pad"
-          />
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-          />
-          <Text style={styles.label}>Address</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter address"
-            value={address}
-            onChangeText={setAddress}
-          />
-          <Text style={styles.label}>State</Text>
-          <Picker
-            selectedValue={selectedState}
-            onValueChange={handleStateChange}
-            style={styles.picker}
-          >
-            <Picker.Item label="Select state" value="" />
-            {states.map((state) => (
-              <Picker.Item key={state} label={state} value={state} />
-            ))}
-          </Picker>
-          {selectedState && (
-            <>
-              <Text style={styles.label}>City</Text>
-              <Picker
-                selectedValue={selectedCity}
-                onValueChange={setSelectedCity}
-                style={styles.picker}
-              >
-                <Picker.Item label="Select city" value="" />
-                {cities.map((city) => (
-                  <Picker.Item key={city} label={city} value={city} />
-                ))}
-              </Picker>
-            </>
-          )}
-          <Text style={styles.label}>Aadhar No.</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter Aadhar no."
-            value={aadhar}
-            onChangeText={setAadhar}
-            keyboardType="number-pad"
-          />
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          {success ? <Text style={styles.successText}>{success}</Text> : null}
-          <TouchableOpacity style={styles.bookButton} onPress={submit}>
-            <Text style={styles.bookButtonText}>Save patient</Text>
-          </TouchableOpacity>
+        )}
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: 40 }}
+        >
+          <Text style={styles.heading}>Register New Patient</Text>
+
+          <View style={styles.card}>
+            <Text style={styles.label}>First Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter patient first name"
+              value={first_name}
+              onChangeText={setFirst_name}
+            />
+
+            <Text style={styles.label}>Last Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter patient last name"
+              value={last_name}
+              onChangeText={setLast_name}
+            />
+
+            <Text style={styles.label}>Father/Husband Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter father/husband name"
+              value={fname}
+              onChangeText={setFname}
+            />
+
+            <Text style={styles.label}>Patient Age</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter patient age"
+              value={age}
+              onChangeText={setAge}
+              keyboardType="number-pad"
+            />
+
+            <Text style={styles.label}>Select Gender</Text>
+            <View style={styles.genderContainer}>
+              {["Male", "Female"].map((gender) => (
+                <TouchableOpacity
+                  key={gender}
+                  style={[
+                    styles.genderButton,
+                    selectedGender === gender && styles.selected,
+                  ]}
+                  onPress={() => setSelectedGender(gender)}
+                >
+                  <Text
+                    style={
+                      selectedGender === gender
+                        ? styles.selectedText
+                        : styles.genderText
+                    }
+                  >
+                    {gender}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.label}>Marital Status</Text>
+            <Picker
+              selectedValue={selectedStatus}
+              onValueChange={setSelectedStatus}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select status" value="" />
+              {MARITAL_STATUSES.map((status) => (
+                <Picker.Item key={status} label={status} value={status} />
+              ))}
+            </Picker>
+
+            <Text style={styles.label}>Mobile</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter mobile no."
+              value={mobile}
+              onChangeText={setMobile}
+              keyboardType="number-pad"
+            />
+
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
+
+            <Text style={styles.label}>Address</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter address"
+              value={address}
+              onChangeText={setAddress}
+            />
+
+            <Text style={styles.label}>State</Text>
+            <Picker
+              selectedValue={selectedState}
+              onValueChange={handleStateChange}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select state" value="" />
+              {states.map((state) => (
+                <Picker.Item key={state} label={state} value={state} />
+              ))}
+            </Picker>
+
+            {selectedState && (
+              <>
+                <Text style={styles.label}>City</Text>
+                <Picker
+                  selectedValue={selectedCity}
+                  onValueChange={setSelectedCity}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select city" value="" />
+                  {cities.map((city) => (
+                    <Picker.Item key={city} label={city} value={city} />
+                  ))}
+                </Picker>
+              </>
+            )}
+
+            <Text style={styles.label}>Aadhar No.</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Aadhar no."
+              value={aadhar}
+              onChangeText={setAadhar}
+              keyboardType="number-pad"
+            />
+
+            {error ? <Text style={styles.errorBox}>{error}</Text> : null}
+            {success ? <Text style={styles.successBox}>{success}</Text> : null}
+
+            <TouchableOpacity style={styles.bookButton} onPress={submit}>
+              <Text style={styles.bookButtonText}>Save Patient</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -284,47 +305,86 @@ const OtherAppointment = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f5f5f5" },
-  label: { fontSize: 18, marginVertical: 10, marginLeft: 20 },
+  container: { flex: 1, backgroundColor: "#f5f6fa" },
+  heading: {
+    fontSize: 24,
+    fontWeight: "700",
+    textAlign: "center",
+    marginVertical: 10,
+    color: "#333",
+  },
+  card: {
+    marginHorizontal: 5,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  label: { fontSize: 16, fontWeight: "500", marginTop: 10, marginLeft: 5 },
   input: {
-    height: 40,
+    height: 45,
     borderColor: "#ddd",
     borderWidth: 1,
-    borderRadius: 5,
-    marginHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 8,
+    marginBottom: 12,
     paddingHorizontal: 10,
-    marginVertical: 10,
+    backgroundColor: "#fafafa",
   },
   picker: {
-    marginHorizontal: 20,
-    backgroundColor: "#fff",
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    marginVertical: 10,
+    marginTop: 8,
+    marginBottom: 12,
+    backgroundColor: "#fafafa",
+    borderRadius: 8,
   },
-  genderContainer: { flexDirection: "row", marginHorizontal: 20 },
+  genderContainer: { flexDirection: "row", marginTop: 8, marginBottom: 12 },
   genderButton: {
     flex: 1,
-    padding: 10,
-    borderRadius: 5,
+    padding: 12,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#ccc",
     marginHorizontal: 5,
-  },
-  selected: { backgroundColor: "#007bff" },
-  genderText: { textAlign: "center", color: "#000" },
-  selectedText: { textAlign: "center", color: "#fff" },
-  errorText: { color: "red", marginHorizontal: 20 },
-  successText: { color: "green", marginHorizontal: 20 },
-  bookButton: {
-    backgroundColor: "#007bff",
-    margin: 20,
-    padding: 15,
-    borderRadius: 5,
     alignItems: "center",
   },
-  bookButtonText: { color: "#fff", fontSize: 18 },
+  selected: { backgroundColor: "#007bff", borderColor: "#007bff" },
+  genderText: { textAlign: "center", color: "#333", fontWeight: "500" },
+  selectedText: { textAlign: "center", color: "#fff", fontWeight: "600" },
+  errorBox: {
+    backgroundColor: "#ffe6e6",
+    color: "#cc0000",
+    padding: 10,
+    borderRadius: 6,
+    marginTop: 10,
+    textAlign: "center",
+  },
+  successBox: {
+    backgroundColor: "#e6ffed",
+    color: "#007f00",
+    padding: 10,
+    borderRadius: 6,
+    marginTop: 10,
+    textAlign: "center",
+  },
+  bookButton: {
+    backgroundColor: "#007bff",
+    marginTop: 20,
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  bookButtonText: { color: "#fff", fontSize: 18, fontWeight: "600" },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(255,255,255,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+  },
 });
 
 export default OtherAppointment;

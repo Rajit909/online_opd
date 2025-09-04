@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Platform,
   BackHandler,
-  Alert
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,44 +22,75 @@ import Banner from "../components/Banner";
 const { width, height } = Dimensions.get("window");
 
 const Home = () => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Handle back press to prevent going back to the login page
+  // Fetch logged-in user
   useEffect(() => {
     const getUser = async () => {
-      const storedUser = await AsyncStorage.getItem("user");
-      const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      setUser(parsedUser.user?.name?.toString());
+      try {
+        const storedUser = await AsyncStorage.getItem("user");
+        const parsedUser = storedUser ? JSON.parse(storedUser) : {};
+        setUser(parsedUser?.user?.name || null);
 
-      // If the user is logged in, replace the login page
-      if (parsedUser && parsedUser.user) {
-        router.replace("/home");
-      } else {
-        router.replace("/"); // Navigate to login page if not logged in
+        if (parsedUser?.user) {
+          router.replace("/home");
+        } else {
+          router.replace("/");
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        router.replace("/");
       }
     };
-
     getUser();
+  }, []);
 
+  // Prevent back navigation if logged in
+  useEffect(() => {
     const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-      // Prevent going back if user is logged in
-      if (user && user !== "") {
-        // Do nothing and prevent back navigation
-        return true;
+      if (user) {
+        return true; // block back navigation
       }
-      // Allow back navigation if user is not logged in (i.e., on login screen)
-      return false;
+      return false; // allow default
     });
 
-    // Cleanup the event listener when the component unmounts
     return () => backHandler.remove();
   }, [user]);
 
-  const onRefresh = React.useCallback(() => {
+  // Pull to refresh handler
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 2000);
+    setTimeout(() => setRefreshing(false), 1500);
   }, []);
+
+  // Quick access cards
+  const quickAccess = [
+    {
+      title: "Book an Appointment",
+      icon: icons.appointment,
+      bgColor: Platform.OS === "ios" ? "purple" : "blue",
+      route: "/bookappointment",
+    },
+    {
+      title: "Appointment Report",
+      icon: icons.medical_report,
+      bgColor: "#209F84",
+      route: "/appointmentreport",
+    },
+    {
+      title: "OPD Report",
+      icon: icons.report,
+      bgColor: "#EF4444",
+      route: "/opdreport",
+    },
+    {
+      title: "Upcoming Appointment",
+      icon: icons.nextappointment,
+      bgColor: "#2781D5",
+      route: "/nextappointment",
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -69,40 +100,38 @@ const Home = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <View style={styles.innerContainer}>
-          {/* Header */}
-          <Header name={user ? user : "Guest"} />
+        <Header name={user || "Guest"} />
 
-          {/* Banner */}
-          <Banner data={Platform.OS === "ios" ? [] : [{ id: "1", title: "Item" }]} />
+        <Banner
+          data={
+            Platform.OS === "ios"
+              ? []
+              : [
+                  { id: "1", title: "Item" },
+                  { id: "2", title: "Another" },
+                ]
+          }
+        />
 
-          {/* Quick Access Section */}
-          <View style={styles.quickAccessContainer}>
-            <Text style={styles.sectionTitle}>Quick Access</Text>
+        <View style={styles.quickAccessContainer}>
+          <Text style={styles.sectionTitle}>Quick Access</Text>
 
-            <View style={styles.cardContainer}>
-              {[{ title: "Book an Appointment", icon: icons.appointment, bgColor: Platform.OS === "ios" ? "purple" : "blue", route: "/bookappointment" },
-              { title: "Appointment Report", icon: icons.medical_report, bgColor: "#209F84", route: "/appointmentreport" },
-              { title: "OPD Report", icon: icons.report, bgColor: "#EF4444", route: "/opdreport" },
-              { title: "Upcoming Appointment", icon: icons.nextappointment, bgColor: "#2781D5", route: "/nextappointment" }]
-                .map((card, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => router.push(card.route)}
-                    style={styles.cardTouchable}
-                  >
-                    <Card
-                      title={card.title}
-                      icon={card.icon}
-                      bgColor={card.bgColor}
-                      textColor="text-white"
-
-                      backHandler={BackHandler}
-
-                    />
-                  </TouchableOpacity>
-                ))}
-            </View>
+          <View style={styles.cardContainer}>
+            {quickAccess.map((card, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => router.push(card.route)}
+                activeOpacity={0.8}
+                style={styles.cardTouchable}
+              >
+                <Card
+                  title={card.title}
+                  icon={card.icon}
+                  bgColor={card.bgColor}
+                  textColor="text-white"
+                />
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
       </ScrollView>
@@ -111,22 +140,24 @@ const Home = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, backgroundColor: "#F9FAFB" },
   scrollContainer: { flexGrow: 1 },
-  innerContainer: { flex: 1 },
   quickAccessContainer: {
-    paddingVertical: height * 0.02,
+    paddingVertical: height * 0.01,
     alignItems: "center",
   },
   sectionTitle: {
-    fontSize: width * (Platform.OS === "ios" ? 0.07 : 0.08),
-    fontWeight: "bold",
+    fontSize: width * 0.07,
+    fontWeight: "700",
+    color: "#111827",
   },
   cardContainer: {
-    width: width * 0.8,
+    width: width * 0.85,
     marginTop: height * 0.02,
   },
-  cardTouchable: { marginVertical: height * 0.01 },
+  cardTouchable: {
+    marginVertical: height * 0.01,
+  },
 });
 
 export default Home;

@@ -3,13 +3,14 @@ import React from "react";
 import { Tabs } from "expo-router";
 import icons from "@/constants/icons";
 
-const TabIcon = ({ icon, color, name, focused }) => {
+const TabIcon = ({ icon, color, name, focused, size }) => {
   return (
     <View
       style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        padding:10
       }}
     >
       <Image
@@ -17,12 +18,12 @@ const TabIcon = ({ icon, color, name, focused }) => {
         resizeMode="contain"
         tintColor={color}
         style={{
-          width: 20,
-          height: 20,
+          width: 18,
+          height: 18,
           // tintColor: focused ? color : "gray"
         }}
       />
-      <Text style={{ color: color }}>{name}</Text>
+      <Text style={{ color: color, fontSize: 8, width: 80, textAlign: "center"}}>{name}</Text>
     </View>
   );
 };
@@ -36,7 +37,7 @@ const TabsLayout = () => {
           tabBarStyle: {
             backgroundColor: "white",
             borderTopColor: "#232533",
-            height: 84,
+            height: 120
           },
         }}
       >
@@ -55,36 +56,7 @@ const TabsLayout = () => {
             ),
           }}
         />
-        {/* <Tabs.Screen
-          name="bookappointment"
-          options={{
-            title: "BookaApointment",
-            headerShown: false,
-            tabBarIcon: ({ focused, color }) => (
-              <TabIcon
-                icon={icons.appointment}
-                color={color}
-                name="Book appoint"
-                focused={focused}
-              />
-            ),
-          }}
-        /> */}
-        {/* <Tabs.Screen
-          name="nextappointment"
-          options={{
-            title: "NextAppointment",
-            headerShown: false,
-            tabBarIcon: ({ focused, color }) => (
-              <TabIcon
-                icon={icons.nextappointment}
-                color={color}
-                name="Next appoint"
-                focused={focused}
-              />
-            ),
-          }}
-        /> */}
+
         <Tabs.Screen
           name="report"
           options={{

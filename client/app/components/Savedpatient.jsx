@@ -3,38 +3,38 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   TextInput,
   ScrollView,
-  Alert,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
 import {
-  API_END_POINT_GET_ALL_CITY,
   API_END_POINT_GET_ALL_DOCTORS,
   API_END_POINT_GET_ALL_PATIENT,
-  API_END_POINT_GET_ALL_SCHEDULE,
 } from "@/api/Global";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SavedPatient = ({ id }) => {
-  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [isloading, setIsLoading] = useState(false);
-  const [data, setData] = useState([]);
+  const [user, setUser] = useState({});
+  const [patientData, setPatientData] = useState([]);
 
   const [selectedDoctor, setSelectedDoctor] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedGender, setSelectedGender] = useState(null);
+  const [patientName, setPatientName] = useState("");
+  const [patientAge, setPatientAge] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [docData, setDocData] = useState([]);
+  const [times, setTimes] = useState([]);
+  const [selectedTime, setSelectedTime] = useState("");
 
-  const [user, setUser] = useState({});
+  // today’s date (formatted as YYYY-MM-DD)
+  const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     const getUser = async () => {
-      // Fetch user details from AsyncStorage
       const storedUser = await AsyncStorage.getItem("user");
       const parsedUser = storedUser ? JSON.parse(storedUser) : {};
       setUser(parsedUser.user);
@@ -42,27 +42,17 @@ const SavedPatient = ({ id }) => {
     getUser();
   }, []);
 
-  const [patientData, setPatientData] = useState([]);
-  // get all patients
   useEffect(() => {
     fetch(`${API_END_POINT_GET_ALL_PATIENT}`)
       .then((response) => response.json())
-      .then((data) => {
-        setPatientData(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((data) => setPatientData(data))
+      .catch((error) => console.error(error));
   }, []);
 
-  // Fetch patients by mobile number
   const fetchedPatient = patientData.filter(
     (patient) => patient.mobile === user.mobile
   );
-
-  // find patient by id from fecthedPatient
   const filteredPatient = fetchedPatient.find((patient) => patient.id == id);
-  // console.log("filteredPatient",filteredPatient)
 
   useEffect(() => {
     if (filteredPatient) {
@@ -73,105 +63,50 @@ const SavedPatient = ({ id }) => {
     }
   }, [filteredPatient]);
 
-  const [patientName, setPatientName] = useState(
-    filteredPatient ? filteredPatient.name : ""
-  );
-  const [patientAge, setPatientAge] = useState(
-    filteredPatient ? filteredPatient.age : ""
-  );
-  const [mobile, setMobile] = useState("");
-  const [docData, setDocData] = useState([]);
-  const [times, setTimes] = useState([]);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
-
-  // get all doctors
   useEffect(() => {
     fetch(`${API_END_POINT_GET_ALL_DOCTORS}`)
       .then((response) => response.json())
-      .then((data) => {
-        setDocData(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((data) => setDocData(data))
+      .catch((error) => console.error(error));
   }, []);
 
-  // get date and time1, time2 from docData
-  const dates = docData
-    .filter((doctor) => doctor.name === selectedDoctor)
-    .map((doctor) => doctor.date);
-
-  const generateTimeSlots = (startTime, endTime) => {
+  // generate time slots locally (e.g. 9 AM - 5 PM, every 30 min)
+  const generateTimeSlots = (startTime = "09:00", endTime = "17:00") => {
     const slots = [];
-    let current = new Date(`1970-01-01T${startTime}`); // Convert start time to Date object
-    const end = new Date(`1970-01-01T${endTime}`); // Convert end time to Date object
-
+    let current = new Date(`1970-01-01T${startTime}:00`);
+    const end = new Date(`1970-01-01T${endTime}:00`);
     while (current <= end) {
       slots.push(
         current.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-      ); // Add time in HH:MM format
-      current = new Date(current.getTime() + 10 * 60000); // Increment by 10 minutes
+      );
+      current = new Date(current.getTime() + 30 * 60000); // 30 min step
     }
-
     return slots;
   };
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setSelectedTime(""); // Reset selected time when date changes
-    const time1 = docData
-      .filter((doctor) => doctor.name === selectedDoctor)
-      .map((doctor) => doctor.time1);
-    const time2 = docData
-      .filter((doctor) => doctor.name === selectedDoctor)
-      .map((doctor) => doctor.time2);
-
-    //  for selected date
-    const startTimes = time1;
-    const endTimes = time2;
-
-    if (startTimes && endTimes) {
-      const startTime = startTimes[0]; // Get the first start time
-      const endTime = endTimes[0]; // Get the first end time
-
-      // Generate time slots
-      const timeSlots = generateTimeSlots(startTime, endTime);
-      setTimes(timeSlots); // Update state with generated time slots
-    } else {
-      setTimes([]); // No time slots available for the selected date
+  useEffect(() => {
+    // whenever doctor is selected, regenerate time slots
+    if (selectedDoctor) {
+      const slots = generateTimeSlots("09:00", "17:00");
+      setTimes(slots);
     }
-  };
+  }, [selectedDoctor]);
 
-  // slecting department based on doctor using id
   const departments = docData
     .filter((doctor) => doctor.name === selectedDoctor)
     .map((doctor) => doctor.dept);
 
-  const selectedDoctors = docData.filter(
+  const selectedDoctors = docData.find(
     (doctor) => doctor.name === selectedDoctor
-  )[0];
-
+  );
   const drid = selectedDoctors?.id;
-  const fee = selectedDoctors?.fee
+  const fee = selectedDoctors?.fee;
   const uhid = filteredPatient?.uhid;
 
   const handleNext = () => {
-    if (
-      !selectedDoctor ||
-      !selectedDate ||
-      (!selectedTime && !null) ||
-      !patientName ||
-      !selectedGender
-    ) {
-      Alert.alert(
-        "Error",
-        "Please fill all the details to book an appointment."
-      );
+    if (!selectedDoctor || !selectedTime || !patientName || !selectedGender) {
       setError("Please fill all the details to book an appointment.");
-      setTimeout(() => {
-        setError("");
-      }, 3000);
+      setTimeout(() => setError(""), 3000);
       return;
     }
 
@@ -183,8 +118,8 @@ const SavedPatient = ({ id }) => {
         uhid,
         drid,
         fee,
-        selectedDate: selectedDate,
-        selectedTime: selectedTime,
+        selectedDate: today, // always today
+        selectedTime,
         patientName,
         patientAge,
         selectedGender,
@@ -196,120 +131,93 @@ const SavedPatient = ({ id }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <ScrollView>
-          <Text style={styles.label}>Patient Age</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter patient age"
-            value={patientAge}
-            onChangeText={setPatientAge}
-            keyboardType="number-pad"
-            editable={false}
-          />
-          <Text style={styles.label}>Mobile</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter patient age"
-            value={mobile}
-            onChangeText={setMobile}
-            keyboardType="number-pad"
-            editable={false}
-          />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Patient Details</Text>
 
-          <Text style={styles.label}>Select Gender</Text>
-          <View style={styles.genderContainer}>
-            <TouchableOpacity
-              style={[
-                styles.genderButton,
-                selectedGender === "Male" && styles.selected,
-              ]}
-            >
-              <Text
-                style={
-                  selectedGender === "Male"
-                    ? styles.selectedText
-                    : styles.genderText
-                }
-              >
-                Male
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.genderButton,
-                selectedGender === "Female" && styles.selected,
-              ]}
-            >
-              <Text
-                style={
-                  selectedGender === "Female"
-                    ? styles.selectedText
-                    : styles.genderText
-                }
-              >
-                Female
-              </Text>
-            </TouchableOpacity>
+            <Text style={styles.label}>Name</Text>
+            <TextInput style={styles.input} value={patientName} editable={false} />
+
+            <Text style={styles.label}>Age</Text>
+            <TextInput style={styles.input} value={patientAge} editable={false} />
+
+            <Text style={styles.label}>Mobile</Text>
+            <TextInput style={styles.input} value={mobile} editable={false} />
+
+            <Text style={styles.label}>Gender</Text>
+            <View style={styles.genderContainer}>
+              {["Male", "Female"].map((gender) => (
+                <TouchableOpacity
+                  key={gender}
+                  style={[
+                    styles.genderButton,
+                    selectedGender === gender && styles.selected,
+                  ]}
+                >
+                  <Text
+                    style={
+                      selectedGender === gender
+                        ? styles.selectedText
+                        : styles.genderText
+                    }
+                  >
+                    {gender}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
 
-          <Text style={styles.label}>Select Doctor</Text>
-          <Picker
-            selectedValue={selectedDoctor}
-            onValueChange={(value) => {
-              setSelectedDoctor(value);
-              setSelectedDepartment(""); // Reset department if doctor changes
-            }}
-            style={styles.picker}
-          >
-            <Picker.Item label="Select Doctor" value="" />
-            {docData.map((doctor) => (
-              <Picker.Item
-                key={doctor.id}
-                label={doctor.name}
-                value={doctor.name}
-              />
-            ))}
-          </Picker>
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Doctor Selection</Text>
 
-          <Text style={styles.label}>Doctor's Department</Text>
-          <Text style={styles.picker}>
-            {departments.length > 0
-              ? departments.join(", ")
-              : "Select Doctor first"}
-          </Text>
+            <Text style={styles.label}>Select Doctor</Text>
+            <Picker
+              selectedValue={selectedDoctor}
+              onValueChange={(value) => setSelectedDoctor(value)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Doctor" value="" />
+              {docData.map((doctor) => (
+                <Picker.Item
+                  key={doctor.id}
+                  label={doctor.name}
+                  value={doctor.name}
+                />
+              ))}
+            </Picker>
 
-          {/* Date Selection */}
-          <Text style={styles.label}>Date</Text>
-          <Picker
-            selectedValue={selectedDate}
-            onValueChange={(value) => handleDateChange(value)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Select Date" value="" />
-            {dates.map((date, index) => (
-              <Picker.Item key={index} label={date} value={date} />
-            ))}
-          </Picker>
+            <Text style={styles.label}>Department</Text>
+            <Text style={styles.infoText}>
+              {departments.length > 0
+                ? departments.join(", ")
+                : "Select Doctor first"}
+            </Text>
 
-          {/* Time Selection */}
-          {selectedDate && (
-            <>
-              <Text style={styles.label}>Time</Text>
-              <Picker
-                selectedValue={selectedTime}
-                onValueChange={(value) => setSelectedTime(value)}
-                style={styles.picker}
-              >
-                <Picker.Item label="Select Time Slot" value="" />
-                {times.map((time, index) => (
-                  <Picker.Item key={index} label={time} value={time} />
-                ))}
-              </Picker>
-            </>
-          )}
+            <Text style={styles.label}>Date</Text>
+            <Text style={styles.infoText}>{today}</Text>
+
+            {selectedDoctor && (
+              <>
+                <Text style={styles.label}>Time</Text>
+                <Picker
+                  selectedValue={selectedTime}
+                  onValueChange={(value) => setSelectedTime(value)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select Time Slot" value="" />
+                  {times.map((time, index) => (
+                    <Picker.Item key={index} label={time} value={time} />
+                  ))}
+                </Picker>
+              </>
+            )}
+          </View>
 
           {error ? (
-            <Text style={{ color: "red", marginHorizontal: 20 }}>{error}</Text>
+            <View style={styles.errorBox}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
           ) : null}
 
           <TouchableOpacity style={styles.bookButton} onPress={handleNext}>
@@ -325,75 +233,63 @@ export default SavedPatient;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f5f5f5" },
-  heading: {
-    fontSize: 24,
-    fontWeight: "bold",
-    margin: 20,
-    alignSelf: "center",
-  },
-  label: { fontSize: 18, marginVertical: 10, marginLeft: 20 },
-  picker: {
-    marginHorizontal: 20,
+  scrollContent: { padding: 3 },
+  card: {
     backgroundColor: "#fff",
-    borderRadius: 5,
-    borderColor: "#ddd",
-    borderWidth: 1,
-    padding: 10,
-    minHeight: 20,
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
-  dateButton: {
-    margin: 5,
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: "#fff",
-    borderColor: "#ddd",
-    borderWidth: 1,
-    alignItems: "center",
-  },
-  dateText: { fontSize: 14, color: "#333" },
-  timeButton: {
-    margin: 8,
-    padding: 5,
-    borderRadius: 5,
-    backgroundColor: "#fff",
-    borderColor: "#ddd",
-    borderWidth: 1,
-    alignItems: "center",
-    width: "45%",
-  },
-  timeText: { fontSize: 14, color: "#333" },
-  timeText2: { backgroundColor: "#FE7646", color: "#ddd" },
-  timeText3: { color: "#ddd" },
-  selected: { backgroundColor: "#007bff", borderColor: "#007bff" },
-  selectedText: { color: "#fff" },
+  sectionTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 10, color: "#333" },
+  label: { fontSize: 16, marginVertical: 6, color: "#555" },
   input: {
     height: 40,
     borderColor: "#ddd",
     borderWidth: 1,
-    borderRadius: 5,
-    marginHorizontal: 20,
+    borderRadius: 8,
     paddingHorizontal: 10,
-    marginVertical: 10,
+    marginBottom: 10,
+    backgroundColor: "#f9f9f9",
   },
-  genderContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 10,
+  picker: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    marginBottom: 10,
   },
+  infoText: { fontSize: 16, color: "#333", marginBottom: 10 },
+  genderContainer: { flexDirection: "row", justifyContent: "space-around", marginVertical: 10 },
   genderButton: {
-    padding: 10,
-    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
     borderColor: "#ddd",
     borderWidth: 1,
     backgroundColor: "#fff",
   },
   genderText: { fontSize: 16, color: "#333" },
+  selected: { backgroundColor: "#007bff", borderColor: "#007bff" },
+  selectedText: { fontSize: 16, color: "#fff" },
+  errorBox: {
+    backgroundColor: "#ffe5e5",
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 8,
+    borderColor: "#ffcccc",
+    borderWidth: 1,
+  },
+  errorText: { color: "#d32f2f", fontSize: 14, textAlign: "center" },
   bookButton: {
     backgroundColor: "#007bff",
     padding: 15,
-    borderRadius: 5,
-    marginHorizontal: 20,
-    marginTop: 20,
+    borderRadius: 10,
+    marginTop: 10,
     alignItems: "center",
   },
   bookButtonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },

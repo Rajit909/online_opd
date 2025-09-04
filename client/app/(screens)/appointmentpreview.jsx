@@ -34,6 +34,7 @@ const AppointmentPreview = () => {
     slectedState,
     aadhar,
   } = useGlobalSearchParams();
+
   const [success, setSuccess] = useState("");
   const [user, setUser] = useState("");
 
@@ -58,41 +59,21 @@ const AppointmentPreview = () => {
         id: user.id,
       };
 
-      // Send the data to the PHP backend to save in the database
       const response = await fetch(`${API_END_POINT_BOOK_APPOINTMENT}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(appointment),
       });
 
-      const text = await response.text(); // Capture the raw response as text
-      console.log("Raw Response:", text);
+      const text = await response.text();
+      let data = JSON.parse(text);
 
-      // Try to parse the response as JSON
-      let data;
-      data = JSON.parse(text);
       if (response.ok) {
         setSuccess(data.message || "Appointment booked successfully!");
-        Alert.alert(
-          "Success",
-          data.message || "Appointment booked successfully!"
-        );
-        // // store appointment in user object in AsyncStorage
-        // const storedUser = await AsyncStorage.getItem("user");
-        // const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-        // const updatedUser = { ...parsedUser, appointments: [...(parsedUser.appointments || []), appointment] };
-        // await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
-        // console.log("Updated User:", updatedUser);
-        setTimeout(() => {
-          router.replace("/nextappointment");
-        }, 3000);
+        Alert.alert("Success", data.message || "Appointment booked successfully!");
+        setTimeout(() => router.replace("/nextappointment"), 2000);
       } else {
-        Alert.alert(
-          "Error",
-          data.message || "Failed to book appointment. Please try again later."
-        );
+        Alert.alert("Error", data.message || "Failed to book appointment.");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -100,59 +81,52 @@ const AppointmentPreview = () => {
     }
   };
 
+  const renderRow = (label, value) => {
+    if (!value) return null;
+    return (
+      <View style={styles.row}>
+        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.value}>{value}</Text>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <ScrollView>
-          <View style={styles.container}>
-            <View>
-              <BackBtn
-                styles={{ marginTop: 20 }}
-                handlePress={() => router.replace("/bookappointment")}
-              />
-              <Text style={styles.heading}>Appointment Preview</Text>
-            </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <BackBtn
+            styles={{ marginTop: 10, marginBottom: 20 }}
+            handlePress={() => router.replace("/bookappointment")}
+          />
 
-            <Text style={styles.label}>Doctor: {selectedDoctor}</Text>
-            <Text style={styles.label}>Department: {departments}</Text>
-            <Text style={styles.label}>Date: {selectedDate}</Text>
-            <Text style={styles.label}>Time: {selectedTime}</Text>
-            <Text style={styles.label}>Patient Name: {patientName}</Text>
-            <Text style={styles.label}>Patient Age: {patientAge}</Text>
-            <Text style={styles.label}>Gender: {selectedGender}</Text>
-            <Text style={styles.label}>Mobile: {mobile}</Text>
-            {email ? <Text style={styles.label}>Email: {email}</Text> : null}
-            {slectedStatus ? (
-              <Text style={styles.label}>Marital Status: {slectedStatus}</Text>
-            ) : null}
-            {address ? (
-              <Text style={styles.label}>Address: {address}</Text>
-            ) : null}
-            {city ? <Text style={styles.label}>City: {city}</Text> : null}
-            {slectedState ? (
-              <Text style={styles.label}>State: {slectedState}</Text>
-            ) : null}
-            {aadhar ? <Text style={styles.label}>Aadhar: {aadhar}</Text> : null}
-            {success ? (
-              <Text
-                style={{
-                  color: "green",
-                  textAlign: "center",
-                  marginVertical: 10,
-                }}
-              >
-                {success}
-              </Text>
-            ) : null}
-            {/* 
-      <TouchableOpacity style={styles.bookButton} onPress={() => router.replace('/bookappointment')}>
-        <Text style={styles.bookButtonText}>Edit</Text>
-      </TouchableOpacity> */}
+          <Text style={styles.heading}>Appointment Preview</Text>
 
-            <TouchableOpacity style={styles.bookButton} onPress={submit}>
-              <Text style={styles.bookButtonText}>Confirm</Text>
-            </TouchableOpacity>
+          <View style={styles.card}>
+            {renderRow("Doctor", selectedDoctor)}
+            {renderRow("Department", departments)}
+            {renderRow("Date", selectedDate)}
+            {renderRow("Time", selectedTime)}
           </View>
+
+          <View style={styles.card}>
+            {renderRow("Patient Name", patientName)}
+            {renderRow("Age", patientAge)}
+            {renderRow("Gender", selectedGender)}
+            {renderRow("Mobile", mobile)}
+            {renderRow("Email", email)}
+            {renderRow("Marital Status", slectedStatus)}
+            {renderRow("Address", address)}
+            {renderRow("City", city)}
+            {renderRow("State", slectedState)}
+            {renderRow("Aadhar", aadhar)}
+          </View>
+
+          {success ? <Text style={styles.successBox}>{success}</Text> : null}
+
+          <TouchableOpacity style={styles.confirmButton} onPress={submit}>
+            <Text style={styles.confirmText}>Confirm</Text>
+          </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -162,20 +136,47 @@ const AppointmentPreview = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f5f5f5", padding: 20 },
   heading: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 20,
     textAlign: "center",
+    marginBottom: 20,
   },
-  label: { fontSize: 18, marginVertical: 10 },
-  bookButton: {
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 6,
+    borderBottomColor: "#eee",
+    borderBottomWidth: 1,
+  },
+  label: { fontWeight: "bold", fontSize: 16, color: "#333" },
+  value: { fontSize: 16, color: "#555" },
+  successBox: {
+    backgroundColor: "#d4edda",
+    color: "#155724",
+    padding: 10,
+    borderRadius: 5,
+    textAlign: "center",
+    marginBottom: 15,
+  },
+  confirmButton: {
     backgroundColor: "#007bff",
     padding: 15,
-    borderRadius: 5,
-    marginVertical: 10,
+    borderRadius: 8,
     alignItems: "center",
+    marginBottom: 30,
   },
-  bookButtonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
+  confirmText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
 });
 
 export default AppointmentPreview;
